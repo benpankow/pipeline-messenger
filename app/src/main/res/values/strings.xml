@@ -5,7 +5,8 @@
     <string name="email_hint">Email</string>
     <string name="password_hint">Password</string>
     <string name="no_account_prompt">Don\'t have an account?</string>
-    <string name="login">Login</string>
     <string name="have_account_prompt">Have an account?</string>
     <string name="username_hint">Username</string>
+    <string name="login">Login</string>
+    <string name="add_conversation">Add Conversation</string>
 </resources>
