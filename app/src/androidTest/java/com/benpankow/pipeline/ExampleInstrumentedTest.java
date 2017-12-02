@@ -1,4 +1,4 @@
-package edu.illinois.finalproject;
+package com.benpankow.pipeline;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
