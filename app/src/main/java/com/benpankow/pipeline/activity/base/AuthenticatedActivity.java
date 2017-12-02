@@ -3,8 +3,7 @@ package com.benpankow.pipeline.activity.base;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
-import com.benpankow.pipeline.ConversationListActivity;
-import com.benpankow.pipeline.LoginActivity;
+import com.benpankow.pipeline.activity.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 

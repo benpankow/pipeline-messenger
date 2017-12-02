@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.benpankow.pipeline.LoginActivity">
+    tools:context="com.benpankow.pipeline.activity.LoginActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -53,7 +53,9 @@
                         android:src="@drawable/pipeline_icon"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:scaleType="fitXY"
+                        android:contentDescription="@string/logo_alt_text" />
                 </android.support.constraint.ConstraintLayout>
 
             </android.support.constraint.ConstraintLayout>

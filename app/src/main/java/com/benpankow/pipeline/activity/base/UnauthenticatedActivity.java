@@ -1,11 +1,9 @@
 package com.benpankow.pipeline.activity.base;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 
-import com.benpankow.pipeline.ConversationListActivity;
+import com.benpankow.pipeline.activity.ConversationListActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
