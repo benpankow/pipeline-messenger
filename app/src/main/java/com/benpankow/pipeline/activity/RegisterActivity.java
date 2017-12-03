@@ -10,7 +10,9 @@ import android.widget.TextView;
 
 import com.benpankow.pipeline.R;
 import com.benpankow.pipeline.activity.base.UnauthenticatedActivity;
+import com.benpankow.pipeline.data.User;
 import com.benpankow.pipeline.helper.AuthenticationHelper;
+import com.benpankow.pipeline.helper.DatabaseHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -25,6 +27,7 @@ public class RegisterActivity extends UnauthenticatedActivity {
     private Button btnRegister;
     private EditText etEmail;
     private EditText etPassword;
+    private EditText etUsername;
 
     private TextView tvLogin;
 
@@ -37,6 +40,7 @@ public class RegisterActivity extends UnauthenticatedActivity {
 
         etEmail = (EditText) findViewById(R.id.et_email);
         etPassword = (EditText) findViewById(R.id.et_password);
+        etUsername = (EditText) findViewById(R.id.et_username);
 
         btnRegister = (Button) findViewById(R.id.btn_register);
 
@@ -69,16 +73,16 @@ public class RegisterActivity extends UnauthenticatedActivity {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // On register, set up user's device token
-                    //String deviceToken = FirebaseInstanceId.getInstance().getToken();
+                    String deviceToken = FirebaseInstanceId.getInstance().getToken();
 
-                    /*DatabaseHelper.updateUser(
-                            new User(user.getUid(),
-                                    user.getEmail(),
-                                    etUsername.getText().toString(),
-                                    deviceToken,
-                                    null // Leave public key empty for now, will be filled later
-                            )
-                    );*/
+                    User userObj = new User();
+                    userObj.deviceToken = deviceToken;
+                    userObj.uid = user.getUid();
+                    userObj.email = user.getEmail();
+                    userObj.username = etUsername.getText().toString();
+                    userObj.nickname = userObj.username;
+
+                    DatabaseHelper.updateUser(userObj.uid, userObj);
 
                     Intent authenticatedIntent = new Intent(
                             RegisterActivity.this,

@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.benpankow.pipeline.R;
 import com.benpankow.pipeline.activity.LoginActivity;
 import com.benpankow.pipeline.activity.base.BaseActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -27,13 +28,19 @@ public class AuthenticationHelper {
                 });
     }
 
-    public static void register(BaseActivity activity, String email, String password) {
+    public static void register(final BaseActivity activity, String email, String password) {
         // Pass info to FirebaseAuth instance
         activity.getAuth().createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-
+                        if (!task.isSuccessful()) {
+                            // Notify user if login failed, otherwise listener in onCreate does the
+                            // work for us
+                            Toast.makeText(activity, "BAD!", Toast
+                                    .LENGTH_SHORT)
+                                    .show();
+                        }
                     }
                 });
     }
