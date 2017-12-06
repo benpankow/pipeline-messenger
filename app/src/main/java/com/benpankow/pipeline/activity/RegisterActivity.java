@@ -75,6 +75,7 @@ public class RegisterActivity extends UnauthenticatedActivity {
                     // On register, set up user's device token
                     String deviceToken = FirebaseInstanceId.getInstance().getToken();
 
+                    // Set up user object
                     User userObj = new User();
                     userObj.deviceToken = deviceToken;
                     userObj.uid = user.getUid();

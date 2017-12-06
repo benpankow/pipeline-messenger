@@ -33,6 +33,7 @@ public class ConversationHolder extends RecyclerView.ViewHolder {
         this.ivMain = itemView;
         this.tvTitle = itemView.findViewById(R.id.tv_user_nickname);
 
+        // On click open messages
         this.ivMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View itemView) {

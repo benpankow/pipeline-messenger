@@ -35,8 +35,9 @@ public class UserHolder extends RecyclerView.ViewHolder {
         this.ivMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // On click, add user + go back to conversation list
                 if (targetUser != null) {
-                    AuthenticationHelper.getLoggedInUserInfo(new Consumer<User>() {
+                    AuthenticationHelper.bindLoggedInUserInfo(new Consumer<User>() {
                         @Override
                         public void accept(User loggedInUser) {
                             DatabaseHelper.createConversationBetween(

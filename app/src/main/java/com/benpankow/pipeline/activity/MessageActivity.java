@@ -1,6 +1,5 @@
 package com.benpankow.pipeline.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,16 +7,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.benpankow.pipeline.R;
 import com.benpankow.pipeline.activity.base.AuthenticatedActivity;
-import com.benpankow.pipeline.activity.component.ConversationHolder;
 import com.benpankow.pipeline.activity.component.MessageHolder;
-import com.benpankow.pipeline.data.Conversation;
 import com.benpankow.pipeline.data.Message;
 import com.benpankow.pipeline.helper.DatabaseHelper;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -64,10 +59,11 @@ public class MessageActivity extends AuthenticatedActivity {
 
                     @Override
                     public int getItemViewType(int position) {
+                        // Switch between sent/received button layout
                         if (getItem(position).sentByCurrentUser()) {
                             return R.layout.item_message_sent;
                         } else {
-                            return R.layout.item_message_recieved;
+                            return R.layout.item_message_received;
                         }
                     }
 
@@ -84,6 +80,7 @@ public class MessageActivity extends AuthenticatedActivity {
         btnSendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Create and send message
                 Message message = new Message();
                 message.text = etMessage.getText().toString().trim();
                 message.senderUid = uid;
@@ -91,8 +88,6 @@ public class MessageActivity extends AuthenticatedActivity {
                     DatabaseHelper.addMessageToConversation(convoid, message);
                 }
                 etMessage.setText("");
-                //InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                //imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
             }
         });
     }

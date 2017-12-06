@@ -37,6 +37,8 @@ public class ConversationListActivity extends AuthenticatedActivity {
         rvConversations.setHasFixedSize(true);
         rvConversations.setLayoutManager(new LinearLayoutManager(this));
 
+        // Load all conversations that this user is in
+
         FirebaseRecyclerOptions<Conversation> conversationOptions =
                 new FirebaseRecyclerOptions.Builder<Conversation>()
                 .setIndexedQuery(DatabaseHelper.queryConversationsForUser(uid),

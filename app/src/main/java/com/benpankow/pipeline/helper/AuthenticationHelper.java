@@ -25,6 +25,13 @@ import java8.util.function.Consumer;
  */
 public class AuthenticationHelper {
 
+    /**
+     * Attempts to log in a new user to the app
+     *
+     * @param activity The Activity that the app currently has open
+     * @param email The user's email
+     * @param password The user's password
+     */
     public static void login(BaseActivity activity, String email, String password) {
         // Pass info to FirebaseAuth instance
         activity.getAuth().signInWithEmailAndPassword(email, password)
@@ -36,6 +43,13 @@ public class AuthenticationHelper {
                 });
     }
 
+    /**
+     * Registers a new user with the app
+     *
+     * @param activity The Activity that the app currently has open
+     * @param email The user's email
+     * @param password The user's password
+     */
     public static void register(final BaseActivity activity, String email, String password) {
         // Pass info to FirebaseAuth instance
         activity.getAuth().createUserWithEmailAndPassword(email, password)
@@ -53,11 +67,19 @@ public class AuthenticationHelper {
                 });
     }
 
-    public static void getLoggedInUserInfo(Consumer<User> listener) {
+    /**
+     * Gets a User object associated with a given uid each time it updates
+     *
+     * @param callback The callback which will be called with the User object, and will be called
+     *                 when the state of the User object changes on the database
+     */
+    public static void bindLoggedInUserInfo(Consumer<User> callback) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user != null) {
-            DatabaseHelper.bindUserData(user.getUid(), listener);
+            DatabaseHelper.bindUserData(user.getUid(), callback);
+        } else {
+            callback.accept(null);
         }
     }
 
