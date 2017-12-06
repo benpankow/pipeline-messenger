@@ -80,6 +80,7 @@ public class RegisterActivity extends UnauthenticatedActivity {
                     userObj.uid = user.getUid();
                     userObj.email = user.getEmail();
                     userObj.username = etUsername.getText().toString();
+                    userObj.usernameLower = userObj.username.toLowerCase();
                     userObj.nickname = userObj.username;
 
                     DatabaseHelper.updateUser(userObj.uid, userObj);

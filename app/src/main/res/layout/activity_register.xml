@@ -23,7 +23,8 @@
             android:layout_marginTop="16dp"
             android:ems="10"
             android:hint="@string/username_hint"
-            android:inputType="textPersonName"
+            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_-"
+            android:inputType="textFilter"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -37,7 +38,7 @@
             android:layout_marginTop="8dp"
             android:ems="10"
             android:hint="@string/email_hint"
-            android:inputType="textEmailAddress|textPersonName"
+            android:inputType="textEmailAddress"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/et_username" />

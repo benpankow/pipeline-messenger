@@ -8,9 +8,15 @@ import android.widget.Toast;
 import com.benpankow.pipeline.R;
 import com.benpankow.pipeline.activity.LoginActivity;
 import com.benpankow.pipeline.activity.base.BaseActivity;
+import com.benpankow.pipeline.data.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * Created by Ben Pankow on 12/2/17.
@@ -43,6 +49,14 @@ public class AuthenticationHelper {
                         }
                     }
                 });
+    }
+
+    public static void getLoggedInUserInfo(ValueEventListener listener) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user != null) {
+            DatabaseHelper.addUserListener(user.getUid(), listener);
+        }
     }
 
 }

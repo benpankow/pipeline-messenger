@@ -24,7 +24,10 @@
         <activity
             android:name=".activity.ConversationListActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".activity.SettingsActivity"></activity>
+        <activity android:name=".activity.SettingsActivity" />
+        <activity
+            android:name=".activity.SearchActivity"
+            android:label="@string/title_activity_search"></activity>
     </application>
 
 </manifest>

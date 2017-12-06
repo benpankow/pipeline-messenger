@@ -6,6 +6,7 @@ package com.benpankow.pipeline.data;
 public class User {
     public String email;
     public String username;
+    public String usernameLower;
     public String uid;
     public String nickname;
     public String deviceToken;
