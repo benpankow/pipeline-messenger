@@ -33,7 +33,7 @@ public class ConversationListActivity extends AuthenticatedActivity {
 
         String uid = getAuth().getUid();
 
-        rvConversations = (RecyclerView) findViewById(R.id.rv_conversations);
+        rvConversations = findViewById(R.id.rv_conversations);
         rvConversations.setHasFixedSize(true);
         rvConversations.setLayoutManager(new LinearLayoutManager(this));
 

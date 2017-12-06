@@ -28,14 +28,14 @@ public class DatabaseHelper {
     private static final String CONVERSATIONS_KEY = "conversations";
     private static final String MESSAGES_KEY = "messages";
 
-    public static void updateUser(String uid, User data, Consumer<DatabaseError> listener) {
+    public static void updateUser(String uid, User data, final Consumer<DatabaseError> listener) {
         if (uid == null) {
             return;
         }
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         database.child(USERS_KEY)
                 .child(uid)
-                .setValue(data, listener);
+                .setValue(data);
     }
 
     public static void updateUser(String uid, User data) {
@@ -92,6 +92,13 @@ public class DatabaseHelper {
                 .equalTo(username);
     }
 
+    public static Query queryMessagesForConversation(String convoid, String uid) {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        return database.child(MESSAGES_KEY)
+                .child(convoid)
+                .child(uid);
+    }
+
     public static void createConversationBetween(String uid1, String uid2) {
         if (uid1 == null || uid2 == null) {
             return;
@@ -101,9 +108,10 @@ public class DatabaseHelper {
         DatabaseReference conversationRef = database.child(CONVERSATIONS_KEY).push();
         Conversation conversation = new Conversation();
         conversation.addParticipants(uid1, uid2);
+        String conversationKey = conversationRef.getKey();
+        conversation.convoid = conversationKey;
         conversationRef.setValue(conversation);
 
-        String conversationKey = conversationRef.getKey();
         addConversationToUser(uid1, conversationKey);
         addConversationToUser(uid2, conversationKey);
     }

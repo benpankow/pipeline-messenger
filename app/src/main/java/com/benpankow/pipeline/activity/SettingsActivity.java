@@ -17,6 +17,7 @@ public class SettingsActivity extends AuthenticatedActivity {
 
     private Button btnLogOut;
     private EditText etNickname;
+    private Button btnSaveSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,21 +26,16 @@ public class SettingsActivity extends AuthenticatedActivity {
 
         etNickname = (EditText) findViewById(R.id.et_nickname);
 
-        etNickname.addTextChangedListener(new TextWatcher() {
+        btnSaveSettings = (Button) findViewById(R.id.btn_save_settings);
+        btnSaveSettings.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                userData.nickname = etNickname.getText().toString();
+            public void onClick(View view) {
+                String intendedNickname = etNickname.getText().toString().trim();;
+                if (intendedNickname.length() > 0) {
+                    userData.nickname = intendedNickname;
+                }
                 DatabaseHelper.updateUser(userData.uid, userData);
+                finish();
             }
         });
 

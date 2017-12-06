@@ -18,6 +18,7 @@ public class Conversation {
 
     public List<String> participants;
     public String title;
+    public String convoid;
 
     public void addParticipants(String... uids) {
         if (participants == null) {

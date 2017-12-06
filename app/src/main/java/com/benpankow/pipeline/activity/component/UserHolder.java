@@ -1,16 +1,15 @@
 package com.benpankow.pipeline.activity.component;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
 import com.benpankow.pipeline.R;
+import com.benpankow.pipeline.activity.ConversationListActivity;
 import com.benpankow.pipeline.data.User;
 import com.benpankow.pipeline.helper.AuthenticationHelper;
 import com.benpankow.pipeline.helper.DatabaseHelper;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 
 import java8.util.function.Consumer;
 
@@ -23,13 +22,16 @@ import java8.util.function.Consumer;
 public class UserHolder extends RecyclerView.ViewHolder {
 
     private final View ivMain;
-    private final TextView tvName;
+    private final TextView tvNickname;
+    private final TextView tvUsername;
     private User targetUser;
 
-    public UserHolder(View itemView) {
+    public UserHolder(final View itemView) {
         super(itemView);
         this.ivMain = itemView;
-        this.tvName = itemView.findViewById(R.id.search_result_name);
+        this.tvNickname = itemView.findViewById(R.id.tv_user_nickname);
+        this.tvUsername = itemView.findViewById(R.id.tv_user_username);
+
         this.ivMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -41,6 +43,9 @@ public class UserHolder extends RecyclerView.ViewHolder {
                                     loggedInUser.uid,
                                     targetUser.uid
                             );
+                            Intent convoListActivity =
+                                    new Intent(itemView.getContext(), ConversationListActivity.class);
+                            itemView.getContext().startActivity(convoListActivity);
                         }
                     });
                 }
@@ -50,6 +55,7 @@ public class UserHolder extends RecyclerView.ViewHolder {
 
     public void bindUser(User model) {
         targetUser = model;
-        tvName.setText(targetUser.nickname);
+        tvNickname.setText(targetUser.nickname);
+        tvUsername.setText(String.format("@%s", targetUser.username));
     }
 }

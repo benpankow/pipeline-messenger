@@ -1,11 +1,18 @@
 package com.benpankow.pipeline.activity.component;
 
+import android.content.Intent;
+import android.os.Message;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
 import com.benpankow.pipeline.R;
+import com.benpankow.pipeline.activity.ConversationListActivity;
+import com.benpankow.pipeline.activity.MessageActivity;
 import com.benpankow.pipeline.data.Conversation;
+import com.benpankow.pipeline.data.User;
+import com.benpankow.pipeline.helper.AuthenticationHelper;
+import com.benpankow.pipeline.helper.DatabaseHelper;
 
 import java8.util.function.Consumer;
 
@@ -24,7 +31,17 @@ public class ConversationHolder extends RecyclerView.ViewHolder {
     public ConversationHolder(View itemView) {
         super(itemView);
         this.ivMain = itemView;
-        this.tvTitle = itemView.findViewById(R.id.tv_conversation_title);
+        this.tvTitle = itemView.findViewById(R.id.tv_user_nickname);
+
+        this.ivMain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View itemView) {
+                Intent convoListActivity =
+                        new Intent(itemView.getContext(), MessageActivity.class);
+                convoListActivity.putExtra("convoid", conversation.convoid);
+                itemView.getContext().startActivity(convoListActivity);
+            }
+        });
     }
 
     public void bindConversation(Conversation model) {
