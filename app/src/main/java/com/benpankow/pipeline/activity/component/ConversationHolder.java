@@ -13,17 +13,21 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import java8.util.function.Consumer;
+
 /**
  * Created by Ben Pankow on 12/2/17.
+ *
+ * A RecyclerView ViewHolder corresponding to a Conversation
  */
 
-public class ConversationItem extends RecyclerView.ViewHolder {
+public class ConversationHolder extends RecyclerView.ViewHolder {
 
     private final View ivMain;
     private final TextView tvName;
     private Conversation conversation;
 
-    public ConversationItem(View itemView) {
+    public ConversationHolder(View itemView) {
         super(itemView);
         this.ivMain = itemView;
         this.tvName = itemView.findViewById(R.id.search_result_name);
@@ -31,6 +35,11 @@ public class ConversationItem extends RecyclerView.ViewHolder {
 
     public void bindConversation(Conversation model) {
         conversation = model;
-        tvName.setText("EE");
+        model.getTitle(new Consumer<String>() {
+               @Override
+               public void accept(String s) {
+                   tvName.setText(s);
+               }
+        });
     }
 }

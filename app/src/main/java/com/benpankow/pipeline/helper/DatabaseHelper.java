@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import java8.util.function.Consumer;
+
 /**
  * Created by Ben Pankow on 12/2/17.
  */
@@ -45,6 +47,23 @@ public class DatabaseHelper {
         database.child(USERS_KEY)
                 .child(uid)
                 .addValueEventListener(listener);
+    }
+
+    public static void getUserData(String uid, final Consumer<User> listener) {
+        final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        database.child(USERS_KEY)
+                .child(uid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        listener.accept(dataSnapshot.getValue(User.class));
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
     }
 
     public static DatabaseReference getConversationLocation() {

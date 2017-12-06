@@ -14,15 +14,17 @@ import com.google.firebase.database.ValueEventListener;
 
 /**
  * Created by Ben Pankow on 12/2/17.
+ *
+ * A RecyclerView ViewHolder corresponding to a User
  */
 
-public class SearchResult extends RecyclerView.ViewHolder {
+public class UserHolder extends RecyclerView.ViewHolder {
 
     private final View ivMain;
     private final TextView tvName;
     private User targetUser;
 
-    public SearchResult(View itemView) {
+    public UserHolder(View itemView) {
         super(itemView);
         this.ivMain = itemView;
         this.tvName = itemView.findViewById(R.id.search_result_name);

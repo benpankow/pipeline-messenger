@@ -12,10 +12,8 @@ import android.view.ViewGroup;
 
 import com.benpankow.pipeline.R;
 import com.benpankow.pipeline.activity.base.AuthenticatedActivity;
-import com.benpankow.pipeline.activity.component.ConversationItem;
-import com.benpankow.pipeline.activity.component.SearchResult;
+import com.benpankow.pipeline.activity.component.ConversationHolder;
 import com.benpankow.pipeline.data.Conversation;
-import com.benpankow.pipeline.data.User;
 import com.benpankow.pipeline.helper.DatabaseHelper;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -26,7 +24,7 @@ import com.firebase.ui.database.FirebaseRecyclerOptions;
 public class ConversationListActivity extends AuthenticatedActivity {
 
     private RecyclerView rvConversations;
-    private FirebaseRecyclerAdapter<Conversation, ConversationItem> conversationAdapter;
+    private FirebaseRecyclerAdapter<Conversation, ConversationHolder> conversationAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,18 +44,18 @@ public class ConversationListActivity extends AuthenticatedActivity {
                 .build();
 
         conversationAdapter =
-                new FirebaseRecyclerAdapter<Conversation, ConversationItem>(conversationOptions) {
+                new FirebaseRecyclerAdapter<Conversation, ConversationHolder>(conversationOptions) {
 
             @Override
-            public ConversationItem onCreateViewHolder(ViewGroup parent, int viewType) {
+            public ConversationHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.search_result, parent, false);
 
-                return new ConversationItem(view);
+                return new ConversationHolder(view);
             }
 
             @Override
-            protected void onBindViewHolder(ConversationItem holder, int position, Conversation model) {
+            protected void onBindViewHolder(ConversationHolder holder, int position, Conversation model) {
                 holder.bindConversation(model);
             }
         };

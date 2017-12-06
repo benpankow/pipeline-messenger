@@ -13,9 +13,7 @@ import android.widget.EditText;
 import com.benpankow.pipeline.activity.base.AuthenticatedActivity;
 
 import com.benpankow.pipeline.R;
-import com.benpankow.pipeline.activity.component.ConversationItem;
-import com.benpankow.pipeline.activity.component.SearchResult;
-import com.benpankow.pipeline.data.Conversation;
+import com.benpankow.pipeline.activity.component.UserHolder;
 import com.benpankow.pipeline.data.User;
 import com.benpankow.pipeline.helper.DatabaseHelper;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -26,7 +24,7 @@ public class SearchActivity extends AuthenticatedActivity {
 
     private EditText etSearch;
     private RecyclerView rvSearchResults;
-    FirebaseRecyclerAdapter<User, SearchResult> userAdapter;
+    FirebaseRecyclerAdapter<User, UserHolder> userAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,17 +66,17 @@ public class SearchActivity extends AuthenticatedActivity {
                         .setQuery(query, User.class)
                         .build();
 
-        userAdapter = new FirebaseRecyclerAdapter<User, SearchResult>(userOptions) {
+        userAdapter = new FirebaseRecyclerAdapter<User, UserHolder>(userOptions) {
             @Override
-            public SearchResult onCreateViewHolder(ViewGroup parent, int viewType) {
+            public UserHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.search_result, parent, false);
 
-                return new SearchResult(view);
+                return new UserHolder(view);
             }
 
             @Override
-            protected void onBindViewHolder(SearchResult holder, int position, User model) {
+            protected void onBindViewHolder(UserHolder holder, int position, User model) {
                 holder.bindUser(model);
             }
 
