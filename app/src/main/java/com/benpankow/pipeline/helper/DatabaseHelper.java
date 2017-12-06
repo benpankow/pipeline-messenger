@@ -1,6 +1,7 @@
 package com.benpankow.pipeline.helper;
 
 import com.benpankow.pipeline.data.Conversation;
+import com.benpankow.pipeline.data.Message;
 import com.benpankow.pipeline.data.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -132,6 +133,50 @@ public class DatabaseHelper {
                         database.child(USER_CONVERSATIONS_KEY)
                                 .child(uid)
                                 .setValue(conversationList);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    public static void addMessageToConversation(final String convoid, final Message message) {
+        final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
+        getUsersInConversation(convoid, new Consumer<List<String>>() {
+            @Override
+            public void accept(List<String> uids) {
+                for (String uid : uids) {
+                    DatabaseReference ref =
+                            database.child(MESSAGES_KEY)
+                                    .child(convoid)
+                                    .child(uid)
+                                    .push();
+                    ref.setValue(message);
+                }
+
+            }
+        });
+
+
+    }
+
+    private static void getUsersInConversation(String convoid, final Consumer<List<String>> consumer) {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
+        database.child(CONVERSATIONS_KEY)
+                .child(convoid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Conversation conversation = dataSnapshot.getValue(Conversation.class);
+                        if (conversation == null) {
+                            consumer.accept(new ArrayList<String>());
+                        } else {
+                            consumer.accept(conversation.participants);
+                        }
                     }
 
                     @Override

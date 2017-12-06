@@ -36,13 +36,13 @@ public class MessageActivity extends AuthenticatedActivity {
         setContentView(R.layout.activity_message);
 
         Intent intent = getIntent();
-        String convoid = intent.getStringExtra("convoid");
+        final String convoid = intent.getStringExtra("convoid");
 
         rvMessages = findViewById(R.id.rv_messages);
         rvMessages.setHasFixedSize(true);
         rvMessages.setLayoutManager(new LinearLayoutManager(this));
 
-        String uid = getAuth().getUid();
+        final String uid = getAuth().getUid();
 
         FirebaseRecyclerOptions<Message> messageOptions =
                 new FirebaseRecyclerOptions.Builder<Message>()
@@ -57,9 +57,18 @@ public class MessageActivity extends AuthenticatedActivity {
                     @Override
                     public MessageHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                         View view = LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.item_conversation, parent, false);
+                                .inflate(viewType, parent, false);
 
                         return new MessageHolder(view);
+                    }
+
+                    @Override
+                    public int getItemViewType(int position) {
+                        if (getItem(position).sentByCurrentUser()) {
+                            return R.layout.item_message_sent;
+                        } else {
+                            return R.layout.item_message_recieved;
+                        }
                     }
 
                     @Override
@@ -77,12 +86,13 @@ public class MessageActivity extends AuthenticatedActivity {
             public void onClick(View view) {
                 Message message = new Message();
                 message.text = etMessage.getText().toString().trim();
+                message.senderUid = uid;
                 if (message.text.length() > 0) {
-
+                    DatabaseHelper.addMessageToConversation(convoid, message);
                 }
                 etMessage.setText("");
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+                //InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                //imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
             }
         });
     }
