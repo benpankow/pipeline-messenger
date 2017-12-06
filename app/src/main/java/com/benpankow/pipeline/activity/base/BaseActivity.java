@@ -3,6 +3,7 @@ package com.benpankow.pipeline.activity.base;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -10,7 +11,7 @@ import com.google.firebase.auth.FirebaseAuth;
  * Created by Ben Pankow on 12/2/17.
  */
 
-public abstract class BaseActivity extends Activity {
+public abstract class BaseActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authListener;
 

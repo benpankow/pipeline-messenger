@@ -2,6 +2,7 @@ package com.benpankow.pipeline.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,10 +14,13 @@ import android.widget.ImageButton;
 import com.benpankow.pipeline.R;
 import com.benpankow.pipeline.activity.base.AuthenticatedActivity;
 import com.benpankow.pipeline.activity.component.MessageHolder;
+import com.benpankow.pipeline.data.Conversation;
 import com.benpankow.pipeline.data.Message;
 import com.benpankow.pipeline.helper.DatabaseHelper;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+
+import java8.util.function.Consumer;
 
 public class MessageActivity extends AuthenticatedActivity {
 
@@ -24,6 +28,8 @@ public class MessageActivity extends AuthenticatedActivity {
     private FirebaseRecyclerAdapter<Message, MessageHolder> messageAdapter;
     private EditText etMessage;
     private ImageButton btnSendMessage;
+    private Conversation conversation;
+    private LinearLayoutManager llmMessages;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +41,8 @@ public class MessageActivity extends AuthenticatedActivity {
 
         rvMessages = findViewById(R.id.rv_messages);
         rvMessages.setHasFixedSize(true);
-        rvMessages.setLayoutManager(new LinearLayoutManager(this));
+        llmMessages = new LinearLayoutManager(this);
+        rvMessages.setLayoutManager(llmMessages);
 
         final String uid = getAuth().getUid();
 
@@ -88,6 +95,23 @@ public class MessageActivity extends AuthenticatedActivity {
                     DatabaseHelper.addMessageToConversation(convoid, message);
                 }
                 etMessage.setText("");
+                llmMessages.scrollToPosition(messageAdapter.getItemCount() - 1);
+            }
+        });
+
+        DatabaseHelper.bindConversation(convoid, new Consumer<Conversation>() {
+            @Override
+            public void accept(Conversation convo) {
+                conversation = convo;
+                convo.getTitle(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) {
+                        ActionBar actionBar = MessageActivity.this.getSupportActionBar();
+                        if (actionBar != null) {
+                            actionBar.setTitle(s);
+                        }
+                    }
+                });
             }
         });
     }

@@ -62,7 +62,7 @@ public class DatabaseHelper {
      * @param callback A callback that will be called with the User object, and will be called
      *                 when the state of the User object changes on the database
      */
-    public static void bindUserData(String uid, final Consumer<User> callback) {
+    public static void bindUser(String uid, final Consumer<User> callback) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         database.child(USERS_KEY)
                 .child(uid)
@@ -73,9 +73,12 @@ public class DatabaseHelper {
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {}
+                    public void onCancelled(DatabaseError databaseError) {
+                        callback.accept(null);
+                    }
                 });
     }
+
 
     /**
      * Gets a User object associated with a given uid
@@ -83,7 +86,7 @@ public class DatabaseHelper {
      * @param uid The uid whose data to fetch
      * @param callback A callback that will be called with the User object
      */
-    public static void getUserData(String uid, final Consumer<User> callback) {
+    public static void getUser(String uid, final Consumer<User> callback) {
         final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         database.child(USERS_KEY)
                 .child(uid)
@@ -94,7 +97,34 @@ public class DatabaseHelper {
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {}
+                    public void onCancelled(DatabaseError databaseError) {
+                        callback.accept(null);
+                    }
+                });
+    }
+
+
+    /**
+     * Gets a Conversation object associated with a given convoid each time it updates
+     *
+     * @param convoid The convoid whose data to fetch
+     * @param callback A callback that will be called with the Conversation object, and will be called
+     *                 when the state of the Conversation object changes on the database
+     */
+    public static void bindConversation(String convoid, final Consumer<Conversation> callback) {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        database.child(CONVERSATIONS_KEY)
+                .child(convoid)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        callback.accept(dataSnapshot.getValue(Conversation.class));
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        callback.accept(null);
+                    }
                 });
     }
 
@@ -222,6 +252,12 @@ public class DatabaseHelper {
                                     .child(uid)
                                     .push();
                     ref.setValue(message);
+
+                    database.child(CONVERSATIONS_KEY)
+                            .child(convoid)
+                            .child("recentMessages")
+                            .child(uid)
+                            .setValue(message);
                 }
 
             }

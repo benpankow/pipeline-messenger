@@ -4,15 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.benpankow.pipeline.activity.ConversationListActivity;
 import com.benpankow.pipeline.activity.LoginActivity;
 import com.benpankow.pipeline.data.User;
 import com.benpankow.pipeline.helper.DatabaseHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 
 import java8.util.function.Consumer;
 
@@ -31,7 +27,7 @@ public abstract class AuthenticatedActivity extends BaseActivity {
 
         first = true;
         if (user != null) {
-            DatabaseHelper.bindUserData(user.getUid(), new Consumer<User>() {
+            DatabaseHelper.bindUser(user.getUid(), new Consumer<User>() {
                 @Override
                 public void accept(User user) {
                     userData = user;

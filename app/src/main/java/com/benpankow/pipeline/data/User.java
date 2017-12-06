@@ -2,6 +2,8 @@ package com.benpankow.pipeline.data;
 
 /**
  * Created by Ben Pankow on 12/2/17.
+ *
+ * Stores data relating to a specific user
  */
 public class User {
     public String email;
