@@ -60,7 +60,7 @@ public class SearchActivity extends AuthenticatedActivity {
             userAdapter.stopListening();
         }
 
-        Query query = DatabaseHelper.getUserByUsername(queryText);
+        Query query = DatabaseHelper.queryUserByUsername(queryText);
         FirebaseRecyclerOptions<User> userOptions =
                 new FirebaseRecyclerOptions.Builder<User>()
                         .setQuery(query, User.class)
@@ -70,7 +70,7 @@ public class SearchActivity extends AuthenticatedActivity {
             @Override
             public UserHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.search_result, parent, false);
+                        .inflate(R.layout.item_user, parent, false);
 
                 return new UserHolder(view);
             }

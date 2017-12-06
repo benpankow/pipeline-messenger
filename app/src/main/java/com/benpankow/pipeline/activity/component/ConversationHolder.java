@@ -6,12 +6,6 @@ import android.widget.TextView;
 
 import com.benpankow.pipeline.R;
 import com.benpankow.pipeline.data.Conversation;
-import com.benpankow.pipeline.data.User;
-import com.benpankow.pipeline.helper.AuthenticationHelper;
-import com.benpankow.pipeline.helper.DatabaseHelper;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 
 import java8.util.function.Consumer;
 
@@ -24,13 +18,13 @@ import java8.util.function.Consumer;
 public class ConversationHolder extends RecyclerView.ViewHolder {
 
     private final View ivMain;
-    private final TextView tvName;
+    private final TextView tvTitle;
     private Conversation conversation;
 
     public ConversationHolder(View itemView) {
         super(itemView);
         this.ivMain = itemView;
-        this.tvName = itemView.findViewById(R.id.search_result_name);
+        this.tvTitle = itemView.findViewById(R.id.tv_conversation_title);
     }
 
     public void bindConversation(Conversation model) {
@@ -38,7 +32,7 @@ public class ConversationHolder extends RecyclerView.ViewHolder {
         model.getTitle(new Consumer<String>() {
                @Override
                public void accept(String s) {
-                   tvName.setText(s);
+                   tvTitle.setText(s);
                }
         });
     }

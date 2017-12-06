@@ -18,6 +18,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import java8.util.function.Consumer;
+
 /**
  * Created by Ben Pankow on 12/2/17.
  */
@@ -51,11 +53,11 @@ public class AuthenticationHelper {
                 });
     }
 
-    public static void getLoggedInUserInfo(ValueEventListener listener) {
+    public static void getLoggedInUserInfo(Consumer<User> listener) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user != null) {
-            DatabaseHelper.addUserListener(user.getUid(), listener);
+            DatabaseHelper.bindUserData(user.getUid(), listener);
         }
     }
 

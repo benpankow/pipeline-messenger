@@ -14,6 +14,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import java8.util.function.Consumer;
+
 /**
  * Created by Ben Pankow on 12/2/17.
  */
@@ -29,20 +31,15 @@ public abstract class AuthenticatedActivity extends BaseActivity {
 
         first = true;
         if (user != null) {
-            DatabaseHelper.addUserListener(user.getUid(), new ValueEventListener() {
+            DatabaseHelper.bindUserData(user.getUid(), new Consumer<User>() {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    userData = dataSnapshot.getValue(User.class);
+                public void accept(User user) {
+                    userData = user;
                     onUserDataUpdate();
                     if (first) {
                         onUserDataObtained();
                         first = false;
                     }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
                 }
             });
         }

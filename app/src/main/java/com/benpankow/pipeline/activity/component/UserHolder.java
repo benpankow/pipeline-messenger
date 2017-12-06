@@ -12,6 +12,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import java8.util.function.Consumer;
+
 /**
  * Created by Ben Pankow on 12/2/17.
  *
@@ -32,17 +34,13 @@ public class UserHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View view) {
                 if (targetUser != null) {
-                    AuthenticationHelper.getLoggedInUserInfo(new ValueEventListener() {
+                    AuthenticationHelper.getLoggedInUserInfo(new Consumer<User>() {
                         @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            User loggedInUser = dataSnapshot.getValue(User.class);
-
-                            DatabaseHelper.createConversationBetween(loggedInUser.uid, targetUser.uid);
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
+                        public void accept(User loggedInUser) {
+                            DatabaseHelper.createConversationBetween(
+                                    loggedInUser.uid,
+                                    targetUser.uid
+                            );
                         }
                     });
                 }

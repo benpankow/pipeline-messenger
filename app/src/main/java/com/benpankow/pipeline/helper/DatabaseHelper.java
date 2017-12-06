@@ -28,7 +28,7 @@ public class DatabaseHelper {
     private static final String CONVERSATIONS_KEY = "conversations";
     private static final String MESSAGES_KEY = "messages";
 
-    public static void updateUser(String uid, User data, CompletionListener listener) {
+    public static void updateUser(String uid, User data, Consumer<DatabaseError> listener) {
         if (uid == null) {
             return;
         }
@@ -42,11 +42,19 @@ public class DatabaseHelper {
         updateUser(uid, data, null);
     }
 
-    public static void addUserListener(String uid, ValueEventListener listener) {
+    public static void bindUserData(String uid, final Consumer<User> listener) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         database.child(USERS_KEY)
                 .child(uid)
-                .addValueEventListener(listener);
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        listener.accept(dataSnapshot.getValue(User.class));
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {}
+                });
     }
 
     public static void getUserData(String uid, final Consumer<User> listener) {
@@ -60,23 +68,21 @@ public class DatabaseHelper {
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
+                    public void onCancelled(DatabaseError databaseError) {}
                 });
     }
 
-    public static DatabaseReference getConversationLocation() {
+    public static DatabaseReference getRefConversationLocation() {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         return database.child(CONVERSATIONS_KEY).getRef();
     }
 
-    public static Query getConversationsForUser(String uid) {
+    public static Query queryConversationsForUser(String uid) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         return database.child(USER_CONVERSATIONS_KEY).child(uid);
     }
 
-    public static Query getUserByUsername(String username) {
+    public static Query queryUserByUsername(String username) {
         if (username != null) {
             username = username.toLowerCase();
         }

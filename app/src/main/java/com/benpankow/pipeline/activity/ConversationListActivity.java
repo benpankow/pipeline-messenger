@@ -39,8 +39,8 @@ public class ConversationListActivity extends AuthenticatedActivity {
 
         FirebaseRecyclerOptions<Conversation> conversationOptions =
                 new FirebaseRecyclerOptions.Builder<Conversation>()
-                .setIndexedQuery(DatabaseHelper.getConversationsForUser(uid),
-                        DatabaseHelper.getConversationLocation(), Conversation.class)
+                .setIndexedQuery(DatabaseHelper.queryConversationsForUser(uid),
+                        DatabaseHelper.getRefConversationLocation(), Conversation.class)
                 .build();
 
         conversationAdapter =
@@ -49,7 +49,7 @@ public class ConversationListActivity extends AuthenticatedActivity {
             @Override
             public ConversationHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.search_result, parent, false);
+                        .inflate(R.layout.item_conversation, parent, false);
 
                 return new ConversationHolder(view);
             }
