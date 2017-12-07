@@ -10,6 +10,7 @@ import com.google.firebase.database.DatabaseReference.CompletionListener;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -194,6 +195,7 @@ public class DatabaseHelper {
         DatabaseReference conversationRef = database.child(CONVERSATIONS_KEY).push();
         Conversation conversation = new Conversation();
         conversation.addParticipants(uid1, uid2);
+        conversation.timestamp = ServerValue.TIMESTAMP;
         String conversationKey = conversationRef.getKey();
         conversation.convoid = conversationKey;
         conversationRef.setValue(conversation);
@@ -258,6 +260,11 @@ public class DatabaseHelper {
                             .child("recentMessages")
                             .child(uid)
                             .setValue(message);
+
+                    database.child(CONVERSATIONS_KEY)
+                            .child(convoid)
+                            .child("timestamp")
+                            .setValue(ServerValue.TIMESTAMP);
                 }
 
             }

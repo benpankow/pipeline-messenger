@@ -19,6 +19,7 @@ import com.benpankow.pipeline.data.Message;
 import com.benpankow.pipeline.helper.DatabaseHelper;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.ServerValue;
 
 import java8.util.function.Consumer;
 
@@ -91,6 +92,7 @@ public class MessageActivity extends AuthenticatedActivity {
                 Message message = new Message();
                 message.text = etMessage.getText().toString().trim();
                 message.senderUid = uid;
+                message.timestamp = ServerValue.TIMESTAMP;
                 if (message.text.length() > 0) {
                     DatabaseHelper.addMessageToConversation(convoid, message);
                 }

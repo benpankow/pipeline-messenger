@@ -15,6 +15,8 @@ import com.benpankow.pipeline.helper.AuthenticationHelper;
 import com.benpankow.pipeline.helper.DatabaseHelper;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Date;
+
 import java8.util.function.Consumer;
 
 /**
@@ -28,6 +30,7 @@ public class ConversationHolder extends RecyclerView.ViewHolder {
     private final View ivMain;
     private final TextView tvTitle;
     private final TextView tvPreview;
+    private final TextView tvTimestamp;
     private Conversation conversation;
 
     public ConversationHolder(View itemView) {
@@ -35,6 +38,7 @@ public class ConversationHolder extends RecyclerView.ViewHolder {
         this.ivMain = itemView;
         this.tvTitle = itemView.findViewById(R.id.tv_user_nickname);
         this.tvPreview = itemView.findViewById(R.id.tv_conversation_preview);
+        this.tvTimestamp = itemView.findViewById(R.id.tv_conversation_timestamp);
 
         // On click open messages
         this.ivMain.setOnClickListener(new View.OnClickListener() {
@@ -58,11 +62,10 @@ public class ConversationHolder extends RecyclerView.ViewHolder {
         });
 
         String uid = FirebaseAuth.getInstance().getUid();
-        Message previewMessage = conversation.getRecentMessage(uid);
-        if (previewMessage != null) {
-            this.tvPreview.setText(previewMessage.text);
-        } else {
-            this.tvPreview.setText("");
-        }
+
+        tvPreview.setText(conversation.getPreviewMessage(uid));
+
+        tvTimestamp.setText(conversation.getTimestamp(uid));
+
     }
 }

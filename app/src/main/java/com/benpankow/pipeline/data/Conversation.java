@@ -1,12 +1,19 @@
 package com.benpankow.pipeline.data;
 
+import android.widget.TextView;
+
 import com.benpankow.pipeline.helper.DatabaseHelper;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import java8.util.function.Consumer;
 
@@ -22,6 +29,7 @@ public class Conversation {
     public String title;
     public String convoid;
     public HashMap<String, Message> recentMessages;
+    public Object timestamp;
 
     public Message getRecentMessage(String uid) {
         if (recentMessages == null) {
@@ -63,5 +71,39 @@ public class Conversation {
             }
         }
         return uid;
+    }
+
+    public String getPreviewMessage(String uid) {
+        Message previewMessage = getRecentMessage(uid);
+        if (previewMessage != null) {
+            return previewMessage.text;
+        } else {
+            return "";
+        }
+    }
+
+    public String getTimestamp(String uid) {
+        Date date = getDate();
+        if (date == null) {
+            return "";
+        }
+
+        Calendar cal = Calendar.getInstance();
+        TimeZone tz = cal.getTimeZone();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("h:mm a", Locale.US);
+        sdf.setTimeZone(tz);
+        return sdf.format(date);
+    }
+
+    public Date getDate(){
+        if (timestamp == null) {
+            return null;
+        }
+        if (timestamp instanceof Long) {
+            return new Date((long) timestamp);
+        } else {
+            return null;
+        }
     }
 }
