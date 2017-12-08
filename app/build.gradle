@@ -33,6 +33,7 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:26.1.0'
     compile 'com.firebaseui:firebase-ui-database:3.1.0'
     compile 'net.sourceforge.streamsupport:streamsupport:1.5.6'
+    implementation 'com.android.support:design:26.1.0'
 }
 
 

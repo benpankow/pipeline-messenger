@@ -27,6 +27,7 @@ public class DatabaseHelper {
 
     private static final String USERS_KEY = "users";
     private static final String USER_CONVERSATIONS_KEY = "user_conversations";
+    private static final String USER_FRIENDS_KEY = "user_friends";
     private static final String CONVERSATIONS_KEY = "conversations";
     private static final String MESSAGES_KEY = "messages";
 
@@ -181,13 +182,52 @@ public class DatabaseHelper {
     }
 
     /**
-     * Creates a new conversation between two users, adding it to both of their conversation lists
+     * Gets a conversation between two users, if it exists, passing it to the given callback. If
+     * it does not exist, return null
      *
      * @param uid1 The uid of the first user
      * @param uid2 The uid of the second user
+     * @param callback A Callback taking a String of the convoid of the users' conversation
      */
-    public static void createConversationBetween(String uid1, String uid2) {
+    public static void getConversationBetween(String uid1,
+                                              String uid2,
+                                              final Consumer<String> callback) {
         if (uid1 == null || uid2 == null) {
+            callback.accept(null);
+            return;
+        }
+        final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
+        database.child(USER_FRIENDS_KEY)
+                .child(uid1)
+                .child(uid2)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        String convoid = dataSnapshot.getValue(String.class);
+                        callback.accept(convoid);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        callback.accept(null);
+                    }
+                });
+    }
+
+    /**
+     * Creates a new direct conversation between two users, adding it to both of their conversation
+     * lists
+     *
+     * @param uid1 The uid of the first user
+     * @param uid2 The uid of the second user
+     * @param callback A Callback taking a String of the convoid of the users' conversation
+     */
+    public static void createConversationBetween(String uid1,
+                                                 String uid2,
+                                                 Consumer<String> callback) {
+        if (uid1 == null || uid2 == null) {
+            callback.accept(null);
             return;
         }
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
@@ -202,7 +242,46 @@ public class DatabaseHelper {
 
         addConversationToUser(uid1, conversationKey);
         addConversationToUser(uid2, conversationKey);
+        addFriendToUser(uid1, uid2, conversationKey);
+        addFriendToUser(uid2, uid1, conversationKey);
+
+        callback.accept(conversationKey);
     }
+
+    /**
+     * Add a specific uid and convoid pair to the list of a user's friends
+     *
+     * @param uid The user whose list of friends to update
+     * @param friendUid The user who is becoming a friend and whose conversation is being added
+     * @param convoid The convoid of the conversation to add
+     */
+    public static void addFriendToUser(final String uid,
+                                       final String friendUid,
+                                       final String convoid) {
+        final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        database.child(USER_FRIENDS_KEY)
+                .child(uid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        HashMap<String, String> friendList = dataSnapshot.getValue
+                                (new GenericTypeIndicator<HashMap<String, String>>() {});
+                        if (friendList == null) {
+                            friendList = new HashMap<>();
+                        }
+                        friendList.put(friendUid, convoid);
+                        database.child(USER_FRIENDS_KEY)
+                                .child(uid)
+                                .setValue(friendList);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
 
     /**
      * Add a specific convoid to the list of a user's conversations

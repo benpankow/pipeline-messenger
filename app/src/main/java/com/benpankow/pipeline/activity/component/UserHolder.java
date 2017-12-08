@@ -9,6 +9,7 @@ import com.benpankow.pipeline.R;
 import com.benpankow.pipeline.activity.ConversationListActivity;
 import com.benpankow.pipeline.data.User;
 import com.benpankow.pipeline.helper.AuthenticationHelper;
+import com.benpankow.pipeline.helper.ConversationHelper;
 import com.benpankow.pipeline.helper.DatabaseHelper;
 
 import java8.util.function.Consumer;
@@ -39,14 +40,12 @@ public class UserHolder extends RecyclerView.ViewHolder {
                 if (targetUser != null) {
                     AuthenticationHelper.bindLoggedInUserInfo(new Consumer<User>() {
                         @Override
-                        public void accept(User loggedInUser) {
-                            DatabaseHelper.createConversationBetween(
-                                    loggedInUser.uid,
-                                    targetUser.uid
-                            );
-                            Intent convoListActivity =
-                                    new Intent(itemView.getContext(), ConversationListActivity.class);
-                            itemView.getContext().startActivity(convoListActivity);
+                        public void accept(final User loggedInUser) {
+                        ConversationHelper.openConversationBetween(
+                                itemView.getContext(),
+                                loggedInUser.uid,
+                                targetUser.uid
+                        );
                         }
                     });
                 }

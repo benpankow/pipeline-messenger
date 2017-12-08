@@ -2,6 +2,7 @@ package com.benpankow.pipeline.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -25,6 +26,7 @@ public class ConversationListActivity extends AuthenticatedActivity {
 
     private RecyclerView rvConversations;
     private FirebaseRecyclerAdapter<Conversation, ConversationHolder> conversationAdapter;
+    private FloatingActionButton fabAddConversation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +34,16 @@ public class ConversationListActivity extends AuthenticatedActivity {
         setContentView(R.layout.activity_conversation_list);
 
         String uid = getAuth().getUid();
+
+        fabAddConversation = findViewById(R.id.fab_add_conversation);
+        fabAddConversation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent settingsIntent =
+                        new Intent(ConversationListActivity.this, SearchActivity.class);
+                ConversationListActivity.this.startActivity(settingsIntent);
+            }
+        });
 
         rvConversations = findViewById(R.id.rv_conversations);
         rvConversations.setHasFixedSize(true);
@@ -78,12 +90,13 @@ public class ConversationListActivity extends AuthenticatedActivity {
                     new Intent(ConversationListActivity.this, SettingsActivity.class);
             ConversationListActivity.this.startActivity(settingsIntent);
             return true;
-        } else if (item.getItemId() == R.id.item_add_conversation) {
+        }
+        /*else if (item.getItemId() == R.id.item_add_conversation) {
             Intent settingsIntent =
                     new Intent(ConversationListActivity.this, SearchActivity.class);
             ConversationListActivity.this.startActivity(settingsIntent);
             return true;
-        }
+        }*/
         return super.onOptionsItemSelected(item);
     }
 

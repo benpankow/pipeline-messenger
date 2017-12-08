@@ -44,10 +44,10 @@ public class ConversationHolder extends RecyclerView.ViewHolder {
         this.ivMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View itemView) {
-                Intent convoListActivity =
+                Intent conversationActivity =
                         new Intent(itemView.getContext(), MessageActivity.class);
-                convoListActivity.putExtra("convoid", conversation.convoid);
-                itemView.getContext().startActivity(convoListActivity);
+                conversationActivity.putExtra("convoid", conversation.convoid);
+                itemView.getContext().startActivity(conversationActivity);
             }
         });
     }
