@@ -92,7 +92,8 @@
                 android:layout_marginRight="5sp"
                 android:layout_weight="1"
                 android:text="@string/have_account_prompt"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:paddingLeft="5dp"/>
 
             <TextView
                 android:id="@+id/tv_login"
@@ -100,7 +101,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/login"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:padding="5dp"/>
         </LinearLayout>
 
     </android.support.constraint.ConstraintLayout>

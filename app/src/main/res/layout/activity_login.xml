@@ -118,18 +118,21 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="5sp"
                 android:layout_weight="1"
                 android:text="@string/no_account_prompt"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:gravity="center_vertical"
+                android:paddingLeft="5dp"/>
 
             <TextView
                 android:id="@+id/tv_sign_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:gravity="center_vertical"
                 android:text="@string/sign_up"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:padding="5dp"/>
         </LinearLayout>
 
     </android.support.constraint.ConstraintLayout>
