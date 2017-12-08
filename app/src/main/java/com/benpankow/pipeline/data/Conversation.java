@@ -48,29 +48,45 @@ public class Conversation {
         participants.addAll(Arrays.asList(uids));
     }
 
-    public void getTitle(final Consumer<String> callback) {
+    public void getTitle(Consumer<String> callback) {
         if (title != null) {
             callback.accept(title);
-            return;
+        } else {
+            generateTitle(callback);
         }
-        DatabaseHelper.getUser(getOtherUid(), new Consumer<User>() {
-            @Override
-            public void accept(User u) {
-                callback.accept(u.nickname);
-            }
-        });
     }
 
-    private String getOtherUid() {
+    private void generateTitle(final Consumer<String> callback) {
         String uid = FirebaseAuth.getInstance().getUid();
-        if (uid != null) {
-            for (String participantUid : participants) {
-                if (!participantUid.equals(uid)) {
-                    return participantUid;
+
+        final List<String> otherParticipants = new ArrayList<>(participants);
+        otherParticipants.remove(uid);
+
+        final int[] counter = { otherParticipants.size() - 1 };
+        final String[] title = { "" };
+
+        for (String participantUid : otherParticipants) {
+            DatabaseHelper.getUser(participantUid, new Consumer<User>() {
+                @Override
+                public void accept(User u) {
+                    if (title[0].length() > 0) {
+                        if (otherParticipants.size() > 2) {
+                            title[0] += ", ";
+                        } else {
+                            title[0] += " ";
+                        }
+                    }
+                    if (counter[0] == 0 && otherParticipants.size() > 1) {
+                        title[0] += "and ";
+                    }
+                    title[0] += u.nickname;
+                    if (counter[0] == 0) {
+                        callback.accept(title[0]);
+                    }
+                    counter[0]--;
                 }
-            }
+            });
         }
-        return uid;
     }
 
     public String getPreviewMessage(String uid) {
