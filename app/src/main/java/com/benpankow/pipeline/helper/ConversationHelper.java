@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.benpankow.pipeline.activity.ConversationListActivity;
+import com.benpankow.pipeline.activity.CreateGroupActivity;
 import com.benpankow.pipeline.activity.MessageActivity;
 
 import java8.util.function.Consumer;
@@ -14,7 +15,7 @@ import java8.util.function.Consumer;
  * Utilities for opening or operating on existing conversations
  */
 public class ConversationHelper {
-    
+
 
     /**
      * Given two users, will open a conversation between them, creating it if neccesary.
@@ -54,5 +55,21 @@ public class ConversationHelper {
                         }
                     }
                 });
+    }
+
+    public static void createAndOpenGroup(final Context context,
+                                          final String[] uids) {
+        DatabaseHelper.createGroup(
+                uids,
+                new Consumer<String>() {
+                    @Override
+                    public void accept(String convoid) {
+                        Intent conversationActivity =
+                                new Intent(context, MessageActivity.class);
+                        conversationActivity.putExtra("convoid", convoid);
+                        context.startActivity(conversationActivity);
+                    }
+                }
+        );
     }
 }

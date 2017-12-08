@@ -11,7 +11,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".activity.LoginActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:label="@string/login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,14 +21,20 @@
         </activity>
         <activity
             android:name=".activity.RegisterActivity"
+            android:label="@string/sign_up"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.ConversationListActivity"
+            android:label="@string/chats"
             android:screenOrientation="portrait" />
         <activity android:name=".activity.SettingsActivity" />
         <activity
             android:name=".activity.SearchActivity"
-            android:label="@string/title_activity_search"
+            android:label="@string/add_contacts"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.CreateGroupActivity"
+            android:label="@string/new_group"
             android:screenOrientation="portrait"/>
         <activity
             android:name=".activity.MessageActivity"

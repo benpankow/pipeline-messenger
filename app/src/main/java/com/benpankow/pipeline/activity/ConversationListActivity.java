@@ -27,6 +27,8 @@ public class ConversationListActivity extends AuthenticatedActivity {
     private RecyclerView rvConversations;
     private FirebaseRecyclerAdapter<Conversation, ConversationHolder> conversationAdapter;
     private FloatingActionButton fabAddConversation;
+    private FloatingActionButton fabAddUser;
+    private FloatingActionButton fabAddGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,13 +37,38 @@ public class ConversationListActivity extends AuthenticatedActivity {
 
         String uid = getAuth().getUid();
 
+        fabAddUser = findViewById(R.id.fab_add_user);
+        fabAddGroup = findViewById(R.id.fab_add_group);
+
         fabAddConversation = findViewById(R.id.fab_add_conversation);
         fabAddConversation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent settingsIntent =
+                if (fabAddUser.getVisibility() == View.VISIBLE) {
+                    fabAddUser.setVisibility(View.INVISIBLE);
+                    fabAddGroup.setVisibility(View.INVISIBLE);
+                } else {
+                    fabAddUser.setVisibility(View.VISIBLE);
+                    fabAddGroup.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        fabAddUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent addUserIntent =
                         new Intent(ConversationListActivity.this, SearchActivity.class);
-                ConversationListActivity.this.startActivity(settingsIntent);
+                ConversationListActivity.this.startActivity(addUserIntent);
+            }
+        });
+
+        fabAddGroup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent groupIntent =
+                        new Intent(ConversationListActivity.this, CreateGroupActivity.class);
+                ConversationListActivity.this.startActivity(groupIntent);
             }
         });
 
@@ -110,5 +137,10 @@ public class ConversationListActivity extends AuthenticatedActivity {
     protected void onStop() {
         super.onStop();
         conversationAdapter.stopListening();
+    }
+
+    @Override
+    public void onBackPressed() {
+
     }
 }

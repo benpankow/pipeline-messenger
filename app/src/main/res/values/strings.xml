@@ -14,4 +14,8 @@
     <string name="log_out">Log out</string>
     <string name="title_activity_search">SearchActivity</string>
     <string name="search_hint">Search by username or email</string>
+    <string name="new_group">New Group</string>
+    <string name="add_contacts">Add Contacts</string>
+    <string name="chats">Chats</string>
+    <string name="next">Next</string>
 </resources>

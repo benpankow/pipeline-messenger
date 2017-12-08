@@ -130,4 +130,12 @@ public class MessageActivity extends AuthenticatedActivity {
         super.onStop();
         messageAdapter.stopListening();
     }
+
+
+    @Override
+    public void onBackPressed() {
+        Intent conversationListActivity =
+                new Intent(MessageActivity.this, ConversationListActivity.class);
+        MessageActivity.this.startActivity(conversationListActivity);
+    }
 }

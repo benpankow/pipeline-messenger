@@ -152,6 +152,27 @@ public class DatabaseHelper {
     }
 
     /**
+     * Gets a DatabaseReference for the location where all users are stored
+     *
+     * @return A DatabaseReference for where users are stored
+     */
+    public static DatabaseReference getRefUserLocation() {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        return database.child(USERS_KEY).getRef();
+    }
+
+    /**
+     * Gets a Query that lists all friends for a specific user
+     *
+     * @param uid The uid whose friends to get
+     * @return A Query that lists all the user's friends
+     */
+    public static Query queryFriendsForUser(String uid) {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        return database.child(USER_FRIENDS_KEY).child(uid);
+    }
+
+    /**
      * Gets a Query that gets a specific user by their username
      *
      * @param username The username to search for
@@ -223,27 +244,50 @@ public class DatabaseHelper {
      * @param uid2 The uid of the second user
      * @param callback A Callback taking a String of the convoid of the users' conversation
      */
-    public static void createConversationBetween(String uid1,
-                                                 String uid2,
-                                                 Consumer<String> callback) {
-        if (uid1 == null || uid2 == null) {
+    public static void createConversationBetween(final String uid1,
+                                                 final String uid2,
+                                                 final Consumer<String> callback) {
+
+        createGroup(new String[]{uid1, uid2}, new Consumer<String>() {
+            @Override
+            public void accept(String conversationKey) {
+                if (conversationKey == null) {
+                    callback.accept(null);
+                    return;
+                }
+                addFriendToUser(uid1, uid2, conversationKey);
+                addFriendToUser(uid2, uid1, conversationKey);
+
+                callback.accept(conversationKey);
+            }
+        });
+    }
+
+
+    public static void createGroup(String[] uids, Consumer<String> callback) {
+        if (uids == null) {
             callback.accept(null);
             return;
+        }
+        for (String uid : uids) {
+            if (uid == null) {
+                callback.accept(null);
+                return;
+            }
         }
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
         DatabaseReference conversationRef = database.child(CONVERSATIONS_KEY).push();
         Conversation conversation = new Conversation();
-        conversation.addParticipants(uid1, uid2);
+        conversation.addParticipants(uids);
         conversation.timestamp = ServerValue.TIMESTAMP;
         String conversationKey = conversationRef.getKey();
         conversation.convoid = conversationKey;
         conversationRef.setValue(conversation);
 
-        addConversationToUser(uid1, conversationKey);
-        addConversationToUser(uid2, conversationKey);
-        addFriendToUser(uid1, uid2, conversationKey);
-        addFriendToUser(uid2, uid1, conversationKey);
+        for (String uid : uids) {
+            addConversationToUser(uid, conversationKey);
+        }
 
         callback.accept(conversationKey);
     }
@@ -379,4 +423,5 @@ public class DatabaseHelper {
                     }
                 });
     }
+
 }
