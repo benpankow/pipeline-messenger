@@ -31,7 +31,7 @@ public class SearchActivity extends AuthenticatedActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        etSearch = (EditText) findViewById(R.id.et_search);
+        etSearch = findViewById(R.id.et_search);
 
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -50,7 +50,7 @@ public class SearchActivity extends AuthenticatedActivity {
             }
         });
 
-        rvSearchResults = (RecyclerView) findViewById(R.id.rv_search_results);
+        rvSearchResults = findViewById(R.id.rv_search_results);
         rvSearchResults.setHasFixedSize(true);
         rvSearchResults.setLayoutManager(new LinearLayoutManager(this));
     }

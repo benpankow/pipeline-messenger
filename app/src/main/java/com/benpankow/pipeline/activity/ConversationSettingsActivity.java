@@ -28,9 +28,9 @@ public class ConversationSettingsActivity extends AuthenticatedActivity {
         Intent intent = getIntent();
         final String convoid = intent.getStringExtra("convoid");
 
-        etConversationTitle = (EditText) findViewById(R.id.et_conversation_title);
+        etConversationTitle = findViewById(R.id.et_conversation_title);
 
-        btnSaveSettings = (Button) findViewById(R.id.btn_save_settings);
+        btnSaveSettings = findViewById(R.id.btn_save_settings);
         btnSaveSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

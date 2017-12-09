@@ -1,5 +1,8 @@
 package com.benpankow.pipeline.helper;
 
+import android.util.Base64;
+import android.util.Log;
+
 import com.benpankow.pipeline.data.Conversation;
 import com.benpankow.pipeline.data.Message;
 import com.benpankow.pipeline.data.Notification;
@@ -14,9 +17,20 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import java8.util.function.Consumer;
 
@@ -403,37 +417,66 @@ public class DatabaseHelper {
         getUsersInConversation(convoid, new Consumer<List<String>>() {
             @Override
             public void accept(List<String> uids) {
-                for (String uid : uids) {
-                    DatabaseReference ref =
-                            database.child(MESSAGES_KEY)
-                                    .child(convoid)
-                                    .child(uid)
-                                    .push();
-                    ref.setValue(message);
+                for (final String uid : uids) {
+                   getUser(uid, new Consumer<User>() {
+                        @Override
+                        public void accept(User user) {
+                            byte[] encodedKey = Base64.decode(user.publicKey, Base64.DEFAULT);
+                            X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(encodedKey);
 
-                    database.child(CONVERSATIONS_KEY)
-                            .child(convoid)
-                            .child("recentMessages")
-                            .child(uid)
-                            .setValue(message);
+                            try {
+                                KeyFactory rsaFactory = KeyFactory.getInstance("RSA");
+                                PublicKey publicKey = rsaFactory.generatePublic(X509publicKey);
 
-                    database.child(CONVERSATIONS_KEY)
-                            .child(convoid)
-                            .child("timestamp")
-                            .setValue(ServerValue.TIMESTAMP);
+                                Message messageForUser = message.clone();
+                                byte[][] encryptedMessage = EncryptionHelper.encrypt(
+                                        messageForUser.text.getBytes(),
+                                        publicKey
+                                );
+                                messageForUser.text = Base64.encodeToString(
+                                        encryptedMessage[0],
+                                        Base64.DEFAULT
+                                );
+                                messageForUser.key = Base64.encodeToString(
+                                        encryptedMessage[1],
+                                        Base64.DEFAULT
+                                );
 
-                    if (!uid.equals(message.senderUid)) {
-                        Notification notification = new Notification();
-                        notification.message = message.text;
-                        notification.recipient = uid;
-                        notification.sender = sender.nickname;
-                        notification.convoid = convoid;
+                                database.child(MESSAGES_KEY)
+                                        .child(convoid)
+                                        .child(uid)
+                                        .push()
+                                        .setValue(messageForUser);
 
-                        database.child(NOTIFICATIONS_KEY)
-                                .push()
-                                .setValue(notification);
-                    }
+                                database.child(CONVERSATIONS_KEY)
+                                        .child(convoid)
+                                        .child("recentMessages")
+                                        .child(uid)
+                                        .setValue(messageForUser);
 
+                                database.child(CONVERSATIONS_KEY)
+                                        .child(convoid)
+                                        .child("timestamp")
+                                        .setValue(ServerValue.TIMESTAMP);
+
+                                if (!uid.equals(message.senderUid)) {
+                                    Notification notification = new Notification();
+                                    notification.message = "New message from " + sender.nickname;
+                                    notification.recipient = uid;
+                                    notification.sender = sender.nickname;
+                                    notification.convoid = convoid;
+
+                                    database.child(NOTIFICATIONS_KEY)
+                                            .push()
+                                            .setValue(notification);
+                                }
+                            } catch (NoSuchAlgorithmException | InvalidKeySpecException
+                                    | BadPaddingException | IllegalBlockSizeException
+                                    | InvalidKeyException | NoSuchPaddingException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
                 }
 
             }
@@ -479,5 +522,16 @@ public class DatabaseHelper {
     public static void updateDeviceToken(String uid, String deviceToken) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         database.child(USERS_KEY).child(uid).child("deviceToken").setValue(deviceToken);
+    }
+
+    /**
+     * Update's a user's public key on the database
+     *
+     * @param uid The uid of the user whose deviceToken to update
+     * @param stringPublicKey The user's new public key
+     */
+    public static void updatePublicKey(String uid, String stringPublicKey) {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        database.child(USERS_KEY).child(uid).child("publicKey").setValue(stringPublicKey);
     }
 }

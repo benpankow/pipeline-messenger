@@ -24,9 +24,9 @@ public class SettingsActivity extends AuthenticatedActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        etNickname = (EditText) findViewById(R.id.et_nickname);
+        etNickname = findViewById(R.id.et_nickname);
 
-        btnSaveSettings = (Button) findViewById(R.id.btn_save_settings);
+        btnSaveSettings = findViewById(R.id.btn_save_settings);
         btnSaveSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -39,7 +39,7 @@ public class SettingsActivity extends AuthenticatedActivity {
             }
         });
 
-        btnLogOut = (Button) findViewById(R.id.btn_log_out);
+        btnLogOut = findViewById(R.id.btn_log_out);
         btnLogOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

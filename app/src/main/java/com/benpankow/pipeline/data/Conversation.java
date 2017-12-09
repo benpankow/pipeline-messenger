@@ -1,5 +1,6 @@
 package com.benpankow.pipeline.data;
 
+import android.content.Context;
 import android.widget.TextView;
 
 import com.benpankow.pipeline.helper.DatabaseHelper;
@@ -89,10 +90,10 @@ public class Conversation {
         }
     }
 
-    public String getPreviewMessage(String uid) {
+    public String getPreviewMessage(String uid, Context context) {
         Message previewMessage = getRecentMessage(uid);
         if (previewMessage != null) {
-            return previewMessage.text;
+            return previewMessage.decrypt(context);
         } else {
             return "";
         }

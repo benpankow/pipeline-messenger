@@ -56,7 +56,7 @@ public class ConversationHolder extends RecyclerView.ViewHolder {
 
         String uid = FirebaseAuth.getInstance().getUid();
 
-        tvPreview.setText(conversation.getPreviewMessage(uid));
+        tvPreview.setText(conversation.getPreviewMessage(uid, itemView.getContext()));
 
         tvTimestamp.setText(conversation.getTimestamp(uid));
 

@@ -43,12 +43,12 @@ public class LoginActivity extends UnauthenticatedActivity {
             Log.w(TAG, "onCreate: " + intent.getExtras().keySet());
         }
 
-        tvSignUp = (TextView) findViewById(R.id.tv_sign_up);
+        tvSignUp = findViewById(R.id.tv_sign_up);
 
-        etEmail = (EditText) findViewById(R.id.et_email);
-        etPassword = (EditText) findViewById(R.id.et_password);
+        etEmail = findViewById(R.id.et_email);
+        etPassword = findViewById(R.id.et_password);
 
-        btnLogin = (Button) findViewById(R.id.btn_login);
+        btnLogin = findViewById(R.id.btn_login);
 
         // Attempt to login on button press
         btnLogin.setOnClickListener(new View.OnClickListener() {

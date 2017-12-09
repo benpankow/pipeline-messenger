@@ -3,6 +3,7 @@ package com.benpankow.pipeline.activity.base;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.benpankow.pipeline.activity.LoginActivity;
 import com.benpankow.pipeline.data.User;
@@ -31,6 +32,10 @@ public abstract class AuthenticatedActivity extends BaseActivity {
                 @Override
                 public void accept(User user) {
                     userData = user;
+                    if (userData == null) {
+                        getAuth().signOut();
+                        return;
+                    }
                     onUserDataUpdate();
                     if (first) {
                         onUserDataObtained();

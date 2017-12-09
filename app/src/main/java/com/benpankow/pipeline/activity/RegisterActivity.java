@@ -13,11 +13,20 @@ import com.benpankow.pipeline.activity.base.UnauthenticatedActivity;
 import com.benpankow.pipeline.data.User;
 import com.benpankow.pipeline.helper.AuthenticationHelper;
 import com.benpankow.pipeline.helper.DatabaseHelper;
+import com.benpankow.pipeline.helper.EncryptionHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.w3c.dom.Text;
+
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.cert.CertificateException;
 
 /**
  * Created by Ben Pankow on 12/2/17.
@@ -36,13 +45,13 @@ public class RegisterActivity extends UnauthenticatedActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        tvLogin = (TextView) findViewById(R.id.tv_login);
+        tvLogin = findViewById(R.id.tv_login);
 
-        etEmail = (EditText) findViewById(R.id.et_email);
-        etPassword = (EditText) findViewById(R.id.et_password);
-        etUsername = (EditText) findViewById(R.id.et_username);
+        etEmail = findViewById(R.id.et_email);
+        etPassword = findViewById(R.id.et_password);
+        etUsername = findViewById(R.id.et_username);
 
-        btnRegister = (Button) findViewById(R.id.btn_register);
+        btnRegister = findViewById(R.id.btn_register);
 
         // Attempt to login on button press
         btnRegister.setOnClickListener(new View.OnClickListener() {
@@ -85,6 +94,15 @@ public class RegisterActivity extends UnauthenticatedActivity {
                     userObj.nickname = userObj.username;
 
                     DatabaseHelper.updateUser(userObj.uid, userObj);
+                    try {
+                        KeyStore keyStore = EncryptionHelper.getKeystore();
+                        EncryptionHelper.generateKeyPair(keyStore, RegisterActivity.this, user);
+                    } catch (IOException | CertificateException | InvalidAlgorithmParameterException
+                            | NoSuchProviderException | NoSuchAlgorithmException
+                            | KeyStoreException e) {
+                        e.printStackTrace();
+                    }
+
 
                     Intent authenticatedIntent = new Intent(
                             RegisterActivity.this,
