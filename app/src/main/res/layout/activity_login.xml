@@ -95,7 +95,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:backgroundTint="@color/colorPrimaryDark"
-            android:text="@string/login"
+            android:text="@string/login_underline"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -130,7 +130,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="@string/sign_up"
+                android:text="@string/sign_up_underline"
                 android:textSize="14sp"
                 android:padding="5dp"/>
         </LinearLayout>

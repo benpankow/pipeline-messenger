@@ -3,9 +3,7 @@ package com.benpankow.pipeline.helper;
 import android.content.Context;
 import android.content.Intent;
 
-import com.benpankow.pipeline.activity.ConversationListActivity;
-import com.benpankow.pipeline.activity.CreateGroupActivity;
-import com.benpankow.pipeline.activity.MessageActivity;
+import com.benpankow.pipeline.activity.ConversationActivity;
 
 import java8.util.function.Consumer;
 
@@ -41,7 +39,7 @@ public class ConversationHelper {
                                         @Override
                                         public void accept(String convoid) {
                                             Intent conversationActivity =
-                                                    new Intent(context, MessageActivity.class);
+                                                    new Intent(context, ConversationActivity.class);
                                             conversationActivity.putExtra("convoid", convoid);
                                             context.startActivity(conversationActivity);
                                         }
@@ -49,7 +47,7 @@ public class ConversationHelper {
                             );
                         } else {
                             Intent conversationActivity =
-                                    new Intent(context, MessageActivity.class);
+                                    new Intent(context, ConversationActivity.class);
                             conversationActivity.putExtra("convoid", convoid);
                             context.startActivity(conversationActivity);
                         }
@@ -65,7 +63,7 @@ public class ConversationHelper {
                     @Override
                     public void accept(String convoid) {
                         Intent conversationActivity =
-                                new Intent(context, MessageActivity.class);
+                                new Intent(context, ConversationActivity.class);
                         conversationActivity.putExtra("convoid", convoid);
                         context.startActivity(conversationActivity);
                     }

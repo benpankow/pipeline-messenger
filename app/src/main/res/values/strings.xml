@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Pipeline</string>
-    <string name="sign_up"><u>Sign Up</u></string>
+    <string name="sign_up_underline"><u>Sign Up</u></string>
+    <string name="sign_up">Sign Up</string>
     <string name="welcome_message">Welcome to Pipeline</string>
     <string name="email_hint">Email</string>
     <string name="password_hint">Password</string>
@@ -8,6 +9,7 @@
     <string name="have_account_prompt">Have an account?</string>
     <string name="username_hint">Username</string>
     <string name="login"><u>Login</u></string>
+    <string name="login_underline"><u>Login</u></string>
     <string name="add_conversation">Add Conversation</string>
     <string name="logo_alt_text">Pipeline Logo</string>
     <string name="settings">Settings</string>
@@ -18,4 +20,8 @@
     <string name="add_contacts">Add Contacts</string>
     <string name="chats">Chats</string>
     <string name="next">Next</string>
+    <string name="nickname">Nickname</string>
+    <string name="title">Title</string>
+    <string name="save_convo_settings">Save Conversation Settings</string>
+    <string name="save_user_settings">Save User Settings</string>
 </resources>

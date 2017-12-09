@@ -58,6 +58,34 @@ public class DatabaseHelper {
     }
 
     /**
+     * Updates data associated with a given conversation
+     *
+     * @param convoid The convoid of the conversation to update
+     * @param data A Conversation object holding that conversation's data
+     */
+    public static void updateConversation(String convoid,
+                                          Conversation data,
+                                          final Consumer<DatabaseError> listener) {
+        if (convoid == null) {
+            return;
+        }
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        database.child(CONVERSATIONS_KEY)
+                .child(convoid)
+                .setValue(data);
+    }
+
+    /**
+     * Updates data associated with a given conversation
+     *
+     * @param convoid The convoid of the conversation to update
+     * @param data A Conversation object holding that conversation's data
+     */
+    public static void updateConversation(String convoid, Conversation data) {
+        updateConversation(convoid, data, null);
+    }
+
+    /**
      * Gets a User object associated with a given uid each time it updates
      *
      * @param uid The uid whose data to fetch
@@ -424,4 +452,14 @@ public class DatabaseHelper {
                 });
     }
 
+    /**
+     * Update's a user's device token on the database, used when a new token is generated.
+     *
+     * @param uid The uid of the user whose deviceToken to update
+     * @param deviceToken The user's new device token
+     */
+    public static void updateDeviceToken(String uid, String deviceToken) {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        database.child(USERS_KEY).child(uid).child("deviceToken").setValue(deviceToken);
+    }
 }

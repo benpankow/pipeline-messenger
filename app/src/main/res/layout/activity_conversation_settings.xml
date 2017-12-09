@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.benpankow.pipeline.activity.SettingsActivity">
+    tools:context="com.benpankow.pipeline.activity.ConversationSettingsActivity">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="300dp"
@@ -15,18 +15,18 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/tv_nickname_label"
+            android:id="@+id/tv_conversation_title_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="@string/nickname"
+            android:text="@string/title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/et_nickname"
+            android:id="@+id/et_conversation_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -35,20 +35,8 @@
             app:layout_constraintBottom_toTopOf="@+id/btn_log_out"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_nickname_label"
+            app:layout_constraintTop_toBottomOf="@+id/tv_conversation_title_label"
             app:layout_constraintVertical_bias="0.0" />
-
-        <Button
-            android:id="@+id/btn_log_out"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/colorAccent"
-            android:text="@string/log_out"
-            android:textColor="@android:color/primary_text_light"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/btn_save_settings"
@@ -57,10 +45,10 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="24dp"
-            android:text="@string/save_user_settings"
+            android:text="@string/save_convo_settings"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_nickname" />
+            app:layout_constraintTop_toBottomOf="@+id/et_conversation_title" />
     </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>

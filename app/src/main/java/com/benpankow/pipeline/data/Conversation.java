@@ -56,7 +56,7 @@ public class Conversation {
         }
     }
 
-    private void generateTitle(final Consumer<String> callback) {
+    public void generateTitle(final Consumer<String> callback) {
         String uid = FirebaseAuth.getInstance().getUid();
 
         final List<String> otherParticipants = new ArrayList<>(participants);

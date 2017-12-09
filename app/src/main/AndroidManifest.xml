@@ -27,7 +27,8 @@
             android:name=".activity.ConversationListActivity"
             android:label="@string/chats"
             android:screenOrientation="portrait" />
-        <activity android:name=".activity.SettingsActivity" />
+        <activity android:name=".activity.SettingsActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.SearchActivity"
             android:label="@string/add_contacts"
@@ -37,8 +38,16 @@
             android:label="@string/new_group"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".activity.MessageActivity"
+            android:name=".activity.ConversationActivity"
             android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".activity.ConversationSettingsActivity"
+            android:screenOrientation="portrait" />
+
+        <service android:name=".service.IdService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

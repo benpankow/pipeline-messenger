@@ -6,6 +6,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -23,7 +25,7 @@ import com.google.firebase.database.ServerValue;
 
 import java8.util.function.Consumer;
 
-public class MessageActivity extends AuthenticatedActivity {
+public class ConversationActivity extends AuthenticatedActivity {
 
     private RecyclerView rvMessages;
     private FirebaseRecyclerAdapter<Message, MessageHolder> messageAdapter;
@@ -35,7 +37,7 @@ public class MessageActivity extends AuthenticatedActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_message);
+        setContentView(R.layout.activity_conversation);
 
         Intent intent = getIntent();
         final String convoid = intent.getStringExtra("convoid");
@@ -108,7 +110,7 @@ public class MessageActivity extends AuthenticatedActivity {
                 convo.getTitle(new Consumer<String>() {
                     @Override
                     public void accept(String s) {
-                        ActionBar actionBar = MessageActivity.this.getSupportActionBar();
+                        ActionBar actionBar = ConversationActivity.this.getSupportActionBar();
                         if (actionBar != null) {
                             actionBar.setTitle(s);
                         }
@@ -116,6 +118,25 @@ public class MessageActivity extends AuthenticatedActivity {
                 });
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Add settings button to menu bar
+        getMenuInflater().inflate(R.menu.conversation_list_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.item_settings) {
+            Intent settingsIntent =
+                    new Intent(ConversationActivity.this, ConversationSettingsActivity.class);
+            settingsIntent.putExtra("convoid", conversation.convoid);
+            ConversationActivity.this.startActivity(settingsIntent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 
@@ -135,7 +156,7 @@ public class MessageActivity extends AuthenticatedActivity {
     @Override
     public void onBackPressed() {
         Intent conversationListActivity =
-                new Intent(MessageActivity.this, ConversationListActivity.class);
-        MessageActivity.this.startActivity(conversationListActivity);
+                new Intent(ConversationActivity.this, ConversationListActivity.class);
+        ConversationActivity.this.startActivity(conversationListActivity);
     }
 }
