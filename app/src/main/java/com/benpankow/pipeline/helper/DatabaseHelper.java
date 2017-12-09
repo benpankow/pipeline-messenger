@@ -2,6 +2,7 @@ package com.benpankow.pipeline.helper;
 
 import com.benpankow.pipeline.data.Conversation;
 import com.benpankow.pipeline.data.Message;
+import com.benpankow.pipeline.data.Notification;
 import com.benpankow.pipeline.data.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,6 +31,7 @@ public class DatabaseHelper {
     private static final String USER_FRIENDS_KEY = "user_friends";
     private static final String CONVERSATIONS_KEY = "conversations";
     private static final String MESSAGES_KEY = "messages";
+    private static final String NOTIFICATIONS_KEY = "notifications";
 
     /**
      * Updates data associated with a given user
@@ -391,8 +393,11 @@ public class DatabaseHelper {
      *
      * @param convoid The convoid of the conversation to send the message to
      * @param message The Message object to send
+     * @param sender The User who sent this message
      */
-    public static void addMessageToConversation(final String convoid, final Message message) {
+    public static void addMessageToConversation(final String convoid,
+                                                final Message message,
+                                                final User sender) {
         final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
         getUsersInConversation(convoid, new Consumer<List<String>>() {
@@ -416,6 +421,19 @@ public class DatabaseHelper {
                             .child(convoid)
                             .child("timestamp")
                             .setValue(ServerValue.TIMESTAMP);
+
+                    if (!uid.equals(message.senderUid)) {
+                        Notification notification = new Notification();
+                        notification.message = message.text;
+                        notification.recipient = uid;
+                        notification.sender = sender.nickname;
+                        notification.convoid = convoid;
+
+                        database.child(NOTIFICATIONS_KEY)
+                                .push()
+                                .setValue(notification);
+                    }
+
                 }
 
             }

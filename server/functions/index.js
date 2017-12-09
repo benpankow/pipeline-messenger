@@ -10,7 +10,9 @@ exports.sendNotification = functions.database.ref('/notifications/{pushId}')
     .onWrite(event => {
         const notification = event.data.current.val();
         const message = notification.message;
+        const sender = notification.sender;
         const recipientUid = notification.recipient;
+        const convoid = notification.convoid;
 
         // Resolve a Promise to get the device token from the database
         const targetDeviceTokenPromise = admin.database().ref(`/users/${recipientUid}/deviceToken`).once('value');
@@ -19,8 +21,11 @@ exports.sendNotification = functions.database.ref('/notifications/{pushId}')
             // Construct message itself
             const payload = {
                 notification: {
-                    title: 'Example Notification',
+                    title: sender,
                     body: message
+                },
+                data: {
+                    convoid : convoid
                 }
             };
 

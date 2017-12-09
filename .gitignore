@@ -9,3 +9,5 @@
 .externalNativeBuild
 /.idea/*
 /.idea/misc.xml
+/server/functions/node_modules/*
+/server/functions/node_modules/

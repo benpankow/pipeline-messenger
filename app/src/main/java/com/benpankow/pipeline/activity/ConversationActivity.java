@@ -96,7 +96,7 @@ public class ConversationActivity extends AuthenticatedActivity {
                 message.senderUid = uid;
                 message.timestamp = ServerValue.TIMESTAMP;
                 if (message.text.length() > 0) {
-                    DatabaseHelper.addMessageToConversation(convoid, message);
+                    DatabaseHelper.addMessageToConversation(convoid, message, userData);
                 }
                 etMessage.setText("");
                 llmMessages.scrollToPosition(messageAdapter.getItemCount() - 1);
