@@ -1,0 +1,10 @@
+{
+  "name": "functions",
+  "version": "1.0.0",
+  "description": "Notification function for Pipeline Messenger",
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^5.5.0",
+    "firebase-functions": "^0.7.3"
+  }
+}
