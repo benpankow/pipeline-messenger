@@ -29,9 +29,6 @@ public class LoginActivity extends UnauthenticatedActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-
         Intent intent = getIntent();
         if (intent != null && intent.getExtras() != null) {
             if (intent.getExtras().containsKey("convoid")) {
@@ -39,9 +36,12 @@ public class LoginActivity extends UnauthenticatedActivity {
                         new Intent(LoginActivity.this, ConversationActivity.class);
                 convoIntent.putExtra("convoid", intent.getExtras().getString("convoid"));
                 LoginActivity.this.startActivity(convoIntent);
+                return;
             }
-            Log.w(TAG, "onCreate: " + intent.getExtras().keySet());
         }
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
 
         tvSignUp = findViewById(R.id.tv_sign_up);
 
