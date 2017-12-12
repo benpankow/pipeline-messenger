@@ -1,8 +1,10 @@
 package com.benpankow.pipeline.helper;
 
+import android.content.Context;
 import android.util.Base64;
 import android.util.Log;
 
+import com.benpankow.pipeline.activity.ConversationActivity;
 import com.benpankow.pipeline.data.Conversation;
 import com.benpankow.pipeline.data.Message;
 import com.benpankow.pipeline.data.Notification;
@@ -17,10 +19,17 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.UnrecoverableEntryException;
+import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
@@ -404,83 +413,90 @@ public class DatabaseHelper {
 
     /**
      * Adds a message to an existing conversation for all users in that conversation
-     *
-     * @param convoid The convoid of the conversation to send the message to
+     *  @param convoid The convoid of the conversation to send the message to
      * @param message The Message object to send
      * @param sender The User who sent this message
+     * @param context The context that this message is sent from
      */
     public static void addMessageToConversation(final String convoid,
                                                 final Message message,
-                                                final User sender) {
+                                                final User sender,
+                                                final Context context) {
         final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
-        getUsersInConversation(convoid, new Consumer<List<String>>() {
-            @Override
-            public void accept(List<String> uids) {
-                for (final String uid : uids) {
-                   getUser(uid, new Consumer<User>() {
-                        @Override
-                        public void accept(User user) {
-                            byte[] encodedKey = Base64.decode(user.publicKey, Base64.DEFAULT);
-                            X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(encodedKey);
+        try {
+            message.sign(context);
 
-                            try {
-                                KeyFactory rsaFactory = KeyFactory.getInstance("RSA");
-                                PublicKey publicKey = rsaFactory.generatePublic(X509publicKey);
+            getUsersInConversation(convoid, new Consumer<List<String>>() {
+                @Override
+                public void accept(List<String> uids) {
+                    for (final String uid : uids) {
+                       getUser(uid, new Consumer<User>() {
+                            @Override
+                            public void accept(User user) {
+                                byte[] encodedKey = Base64.decode(user.publicKey, Base64.DEFAULT);
+                                X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(encodedKey);
 
-                                Message messageForUser = message.clone();
-                                byte[][] encryptedMessage = EncryptionHelper.encrypt(
-                                        messageForUser.text.getBytes(),
-                                        publicKey
-                                );
-                                messageForUser.text = Base64.encodeToString(
-                                        encryptedMessage[0],
-                                        Base64.DEFAULT
-                                );
-                                messageForUser.key = Base64.encodeToString(
-                                        encryptedMessage[1],
-                                        Base64.DEFAULT
-                                );
+                                try {
+                                    KeyFactory rsaFactory = KeyFactory.getInstance("RSA");
+                                    PublicKey publicKey = rsaFactory.generatePublic(X509publicKey);
 
-                                database.child(MESSAGES_KEY)
-                                        .child(convoid)
-                                        .child(uid)
-                                        .push()
-                                        .setValue(messageForUser);
+                                    Message messageForUser = message.clone();
+                                    byte[][] encryptedMessage = EncryptionHelper.encrypt(
+                                            messageForUser.text.getBytes(),
+                                            publicKey
+                                    );
+                                    messageForUser.text = Base64.encodeToString(
+                                            encryptedMessage[0],
+                                            Base64.DEFAULT
+                                    );
+                                    messageForUser.key = Base64.encodeToString(
+                                            encryptedMessage[1],
+                                            Base64.DEFAULT
+                                    );
 
-                                database.child(CONVERSATIONS_KEY)
-                                        .child(convoid)
-                                        .child("recentMessages")
-                                        .child(uid)
-                                        .setValue(messageForUser);
-
-                                database.child(CONVERSATIONS_KEY)
-                                        .child(convoid)
-                                        .child("timestamp")
-                                        .setValue(ServerValue.TIMESTAMP);
-
-                                if (!uid.equals(message.senderUid)) {
-                                    Notification notification = new Notification();
-                                    notification.message = "New message from " + sender.nickname;
-                                    notification.recipient = uid;
-                                    notification.sender = sender.nickname;
-                                    notification.convoid = convoid;
-
-                                    database.child(NOTIFICATIONS_KEY)
+                                    database.child(MESSAGES_KEY)
+                                            .child(convoid)
+                                            .child(uid)
                                             .push()
-                                            .setValue(notification);
-                                }
-                            } catch (NoSuchAlgorithmException | InvalidKeySpecException
-                                    | BadPaddingException | IllegalBlockSizeException
-                                    | InvalidKeyException | NoSuchPaddingException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                }
+                                            .setValue(messageForUser);
 
-            }
-        });
+                                    database.child(CONVERSATIONS_KEY)
+                                            .child(convoid)
+                                            .child("recentMessages")
+                                            .child(uid)
+                                            .setValue(messageForUser);
+
+                                    database.child(CONVERSATIONS_KEY)
+                                            .child(convoid)
+                                            .child("timestamp")
+                                            .setValue(ServerValue.TIMESTAMP);
+
+                                    if (!uid.equals(message.senderUid)) {
+                                        Notification notification = new Notification();
+                                        notification.message = "New message from " + sender.nickname;
+                                        notification.recipient = uid;
+                                        notification.sender = sender.nickname;
+                                        notification.convoid = convoid;
+
+                                        database.child(NOTIFICATIONS_KEY)
+                                                .push()
+                                                .setValue(notification);
+                                    }
+                                } catch (NoSuchAlgorithmException | InvalidKeySpecException
+                                        | BadPaddingException | IllegalBlockSizeException
+                                        | InvalidKeyException | NoSuchPaddingException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+
+                }
+            });
+        } catch (CertificateException | NoSuchAlgorithmException | UnrecoverableEntryException | KeyStoreException | NoSuchProviderException | IOException | InvalidAlgorithmParameterException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | NoSuchPaddingException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

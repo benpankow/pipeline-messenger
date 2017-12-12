@@ -15,12 +15,14 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -45,8 +47,9 @@ public class EncryptionHelper {
 
     private static final String ANDROID_KEY_STORE = "AndroidKeyStore";
     private static final String MSG_KEY_ALIAS = "MsgKey";
-    private static final String RSA = "RSA";
+    private static final String RSA = "RSA/ECB/PKCS1Padding";
     private static final String AES = "AES";
+    private static final String MD5 = "MD5";
 
     /**
      * Generates a RSA keypair for the given user, updating the user's public key in the
@@ -64,7 +67,7 @@ public class EncryptionHelper {
 
         if (!keyStore.containsAlias(alias)) {
             KeyPairGenerator rsaKeyGen = KeyPairGenerator.getInstance(
-                    RSA,
+                    "RSA",
                     ANDROID_KEY_STORE);
 
             // Snippet of below code used to set up RSA key generator on Android API version 18
@@ -148,7 +151,7 @@ public class EncryptionHelper {
      * @return The AES key
      */
     private static SecretKey generateSymmetricKey() throws NoSuchAlgorithmException {
-        KeyGenerator aesKeyGen = KeyGenerator.getInstance(AES);
+        KeyGenerator aesKeyGen = KeyGenerator.getInstance("AES");
         aesKeyGen.init(128);
         return aesKeyGen.generateKey();
     }
@@ -176,7 +179,7 @@ public class EncryptionHelper {
 
         // We then encrypt that AES key with the recipient's public key, since RSA is best suited
         // for encrypting smaller things.
-        Cipher rsaCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        Cipher rsaCipher = Cipher.getInstance(RSA);
         rsaCipher.init(Cipher.ENCRYPT_MODE, recipientPublicKey);
         byte[] encryptedSymmetricKey = rsaCipher.doFinal(symmetricKey.getEncoded());
 
@@ -197,7 +200,7 @@ public class EncryptionHelper {
             throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,
             BadPaddingException, IllegalBlockSizeException {
 
-        Cipher rsaCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        Cipher rsaCipher = Cipher.getInstance(RSA);
         rsaCipher.init(Cipher.DECRYPT_MODE, myPrivateKey);
         byte[] symmetricKeyBytes = rsaCipher.doFinal(encryptedMessage[0]);
 
@@ -213,5 +216,45 @@ public class EncryptionHelper {
         Cipher aesCipher = Cipher.getInstance(AES);
         aesCipher.init(Cipher.DECRYPT_MODE, symmetricKey);
         return aesCipher.doFinal(encryptedMessage[1]);
+    }
+
+    /**
+     * Signs a series of bytes using the user's private key
+     *
+     * @param message The message to sign
+     * @param myPrivateKey The user's private key, to sign the message
+     * @return A byte array representing the signed message
+     */
+    public static byte[] sign(byte[] message, PrivateKey myPrivateKey) throws
+            NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException,
+            NoSuchPaddingException, InvalidKeyException {
+        MessageDigest md = MessageDigest.getInstance(MD5);
+        byte[] messageDigest = md.digest(message);
+
+        Cipher rsaCipher = Cipher.getInstance(RSA);
+        rsaCipher.init(Cipher.ENCRYPT_MODE, myPrivateKey);
+        byte[] signedDigest = rsaCipher.doFinal(messageDigest);
+        return signedDigest;
+    }
+
+    /**
+     * Verifies a message signature with a received message.
+     *
+     * @param message The message data to check the signature of
+     * @param signedDigest The signed message digest provided alongside the message
+     * @param senderPublicKey The public key of the sender
+     * @return A boolean representing whether the signature was verified or not
+     */
+    public static boolean verifySignature(byte[] message, byte[] signedDigest, PublicKey senderPublicKey)
+            throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
+            BadPaddingException, IllegalBlockSizeException {
+        MessageDigest md = MessageDigest.getInstance(MD5);
+        byte[] messageDigest = md.digest(message);
+
+        Cipher rsaCipher = Cipher.getInstance(RSA);
+        rsaCipher.init(Cipher.DECRYPT_MODE, senderPublicKey);
+        byte[] decryptedDigest = rsaCipher.doFinal(signedDigest);
+
+        return Arrays.equals(messageDigest, decryptedDigest);
     }
 }

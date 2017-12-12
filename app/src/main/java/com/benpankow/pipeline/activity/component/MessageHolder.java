@@ -3,6 +3,7 @@ package com.benpankow.pipeline.activity.component;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.benpankow.pipeline.R;
@@ -22,6 +23,8 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import java8.util.function.Consumer;
+
 /**
  * Created by Ben Pankow on 12/2/17.
  *
@@ -32,6 +35,7 @@ public class MessageHolder extends RecyclerView.ViewHolder {
 
     private final View ivMain;
     private final TextView tvMessageText;
+    private final ImageView ivVerified;
 
     private Message targetMessage;
 
@@ -39,12 +43,30 @@ public class MessageHolder extends RecyclerView.ViewHolder {
         super(itemView);
         this.ivMain = itemView;
         this.tvMessageText = itemView.findViewById(R.id.tv_message_text);
-
+        this.ivVerified = itemView.findViewById(R.id.iv_verified);
     }
 
     public void bindMessage(Message model) {
         targetMessage = model;
 
-        tvMessageText.setText(model.decrypt(itemView.getContext()));
+        final String decryptedMessage = model.decrypt(itemView.getContext());
+        tvMessageText.setText(decryptedMessage);
+
+        if (ivVerified != null) {
+            ivVerified.setVisibility(View.INVISIBLE);
+            if (decryptedMessage != null) {
+                model.checkSignature(decryptedMessage, new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean accepted) {
+                        if (accepted) {
+                            ivVerified.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
+            }
+        }
+
+
+
     }
 }

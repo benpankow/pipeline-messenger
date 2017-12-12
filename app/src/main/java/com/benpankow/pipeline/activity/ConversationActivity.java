@@ -110,7 +110,12 @@ public class ConversationActivity extends AuthenticatedActivity {
                 message.senderUid = uid;
                 message.timestamp = ServerValue.TIMESTAMP;
                 if (message.text.length() > 0) {
-                    DatabaseHelper.addMessageToConversation(convoid, message, userData);
+                    DatabaseHelper.addMessageToConversation(
+                            convoid,
+                            message,
+                            userData,
+                            ConversationActivity.this
+                    );
                 }
                 etMessage.setText("");
                 llmMessages.scrollToPosition(messageAdapter.getItemCount() - 1);
