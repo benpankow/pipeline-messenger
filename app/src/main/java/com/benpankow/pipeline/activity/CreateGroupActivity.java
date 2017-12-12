@@ -25,6 +25,8 @@ import java.util.Set;
 
 /**
  * Created by Ben Pankow on 12/2/17.
+ *
+ * Handles creation of groups between many users.
  */
 public class CreateGroupActivity extends AuthenticatedActivity {
 
@@ -46,8 +48,7 @@ public class CreateGroupActivity extends AuthenticatedActivity {
         rvFriends.setHasFixedSize(true);
         rvFriends.setLayoutManager(new LinearLayoutManager(this));
 
-        // Load all conversations that this user is in
-
+        // Load all friends of this user, people they can add to groups
         FirebaseRecyclerOptions<User> conversationOptions =
                 new FirebaseRecyclerOptions.Builder<User>()
                         .setIndexedQuery(DatabaseHelper.queryFriendsForUser(uid),
@@ -86,6 +87,7 @@ public class CreateGroupActivity extends AuthenticatedActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // Next button, creates group
         if (item.getItemId() == R.id.item_next) {
             ConversationHelper.createAndOpenGroup(
                     CreateGroupActivity.this,

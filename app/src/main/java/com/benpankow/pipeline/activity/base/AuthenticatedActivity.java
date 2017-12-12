@@ -15,6 +15,8 @@ import java8.util.function.Consumer;
 
 /**
  * Created by Ben Pankow on 12/2/17.
+ *
+ * A basic activity that is extended by any activity used while authenticated
  */
 public abstract class AuthenticatedActivity extends BaseActivity {
 

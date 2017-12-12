@@ -13,9 +13,8 @@ import java.util.Set;
 /**
  * Created by Ben Pankow on 12/2/17.
  *
- * A RecyclerView ViewHolder corresponding to a User
+ * A RecyclerView ViewHolder corresponding to a User, w/ a checkbox to select the user
  */
-
 public class UserHolderCheckbox extends RecyclerView.ViewHolder {
 
     private final View ivMain;

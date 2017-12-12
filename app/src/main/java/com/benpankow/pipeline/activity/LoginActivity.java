@@ -1,23 +1,20 @@
 package com.benpankow.pipeline.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.benpankow.pipeline.R;
-import com.benpankow.pipeline.activity.base.BaseActivity;
 import com.benpankow.pipeline.activity.base.UnauthenticatedActivity;
 import com.benpankow.pipeline.helper.AuthenticationHelper;
 
-import org.w3c.dom.Text;
-
 /**
  * Created by Ben Pankow on 12/2/17.
+ *
+ * Handles logging in users.
  */
 public class LoginActivity extends UnauthenticatedActivity {
 

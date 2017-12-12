@@ -14,6 +14,11 @@ import com.benpankow.pipeline.helper.DatabaseHelper;
 
 import java8.util.function.Consumer;
 
+/**
+ * Created by Ben Pankow on 12/3/17.
+ *
+ * Handles changing settings related to each conversation.
+ */
 public class ConversationSettingsActivity extends AuthenticatedActivity {
 
     private EditText etConversationTitle;
@@ -30,6 +35,7 @@ public class ConversationSettingsActivity extends AuthenticatedActivity {
 
         etConversationTitle = findViewById(R.id.et_conversation_title);
 
+        // Update conversation name when button pressed
         btnSaveSettings = findViewById(R.id.btn_save_settings);
         btnSaveSettings.setOnClickListener(new View.OnClickListener() {
             @Override

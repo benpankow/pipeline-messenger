@@ -20,6 +20,11 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.Query;
 
+/**
+ * Created by Ben Pankow on 12/2/17.
+ *
+ * Handles searching for other users to add them as a friend.
+ */
 public class SearchActivity extends AuthenticatedActivity {
 
     private EditText etSearch;

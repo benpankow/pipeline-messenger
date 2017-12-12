@@ -17,7 +17,6 @@ import java8.util.function.Consumer;
  *
  * A RecyclerView ViewHolder corresponding to a Conversation
  */
-
 public class ConversationHolder extends RecyclerView.ViewHolder {
 
     private final View ivMain;

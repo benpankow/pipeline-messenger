@@ -28,6 +28,11 @@ import com.google.firebase.database.ServerValue;
 
 import java8.util.function.Consumer;
 
+/**
+ * Created by Ben Pankow on 12/2/17.
+ *
+ * Shows a specific chat between users.
+ */
 public class ConversationActivity extends AuthenticatedActivity {
 
     private RecyclerView rvMessages;
@@ -52,13 +57,13 @@ public class ConversationActivity extends AuthenticatedActivity {
 
         final String uid = getAuth().getUid();
 
+        // Handle incoming messages
         FirebaseRecyclerOptions<Message> messageOptions =
                 new FirebaseRecyclerOptions.Builder<Message>()
                         .setQuery(
                                 DatabaseHelper.queryMessagesForConversation(convoid, uid),
                                 Message.class
                         ).build();
-
         messageAdapter =
                 new FirebaseRecyclerAdapter<Message, MessageHolder>(messageOptions) {
 
@@ -72,7 +77,7 @@ public class ConversationActivity extends AuthenticatedActivity {
 
                     @Override
                     public int getItemViewType(int position) {
-                        // Switch between sent/received button layout
+                        // Switch between sent/received message layout
                         if (getItem(position).sentByCurrentUser()) {
                             return R.layout.item_message_sent;
                         } else {
@@ -88,6 +93,7 @@ public class ConversationActivity extends AuthenticatedActivity {
         rvMessages.setAdapter(messageAdapter);
 
         etMessage = findViewById(R.id.et_message);
+        // Send messages on enter press
         etMessage.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {

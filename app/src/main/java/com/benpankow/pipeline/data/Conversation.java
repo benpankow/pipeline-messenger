@@ -23,7 +23,6 @@ import java8.util.function.Consumer;
  *
  * Stores data relating to a specific conversation
  */
-
 public class Conversation {
 
     public List<String> participants;

@@ -34,6 +34,8 @@ import java8.util.function.Consumer;
 
 /**
  * Created by Ben Pankow on 12/2/17.
+ *
+ * Handles user registration.
  */
 public class RegisterActivity extends UnauthenticatedActivity {
 

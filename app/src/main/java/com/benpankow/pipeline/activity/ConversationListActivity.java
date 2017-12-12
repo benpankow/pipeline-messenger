@@ -21,6 +21,8 @@ import com.firebase.ui.database.FirebaseRecyclerOptions;
 
 /**
  * Created by Ben Pankow on 12/2/17.
+ *
+ * Lists all of a user's conversations.
  */
 public class ConversationListActivity extends AuthenticatedActivity {
 
@@ -40,6 +42,7 @@ public class ConversationListActivity extends AuthenticatedActivity {
         fabAddUser = findViewById(R.id.fab_add_user);
         fabAddGroup = findViewById(R.id.fab_add_group);
 
+        // Handle toggling the add convo/user button
         fabAddConversation = findViewById(R.id.fab_add_conversation);
         fabAddConversation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,6 +57,7 @@ public class ConversationListActivity extends AuthenticatedActivity {
             }
         });
 
+        // Open add user/add group activities on click
         fabAddUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,7 +66,6 @@ public class ConversationListActivity extends AuthenticatedActivity {
                 ConversationListActivity.this.startActivity(addUserIntent);
             }
         });
-
         fabAddGroup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -77,7 +80,6 @@ public class ConversationListActivity extends AuthenticatedActivity {
         rvConversations.setLayoutManager(new LinearLayoutManager(this));
 
         // Load all conversations that this user is in
-
         FirebaseRecyclerOptions<Conversation> conversationOptions =
                 new FirebaseRecyclerOptions.Builder<Conversation>()
                 .setIndexedQuery(DatabaseHelper.queryConversationsForUser(uid),

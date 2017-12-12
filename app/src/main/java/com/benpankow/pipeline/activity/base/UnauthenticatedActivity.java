@@ -9,6 +9,8 @@ import com.google.firebase.auth.FirebaseUser;
 
 /**
  * Created by Ben Pankow on 12/2/17.
+ *
+ * A basic activity that is extended by any activity used while unauthenticated
  */
 public abstract class UnauthenticatedActivity extends BaseActivity {
 

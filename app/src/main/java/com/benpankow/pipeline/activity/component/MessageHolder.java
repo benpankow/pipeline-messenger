@@ -30,7 +30,6 @@ import java8.util.function.Consumer;
  *
  * A RecyclerView ViewHolder corresponding to a Message
  */
-
 public class MessageHolder extends RecyclerView.ViewHolder {
 
     private final View ivMain;
@@ -49,9 +48,11 @@ public class MessageHolder extends RecyclerView.ViewHolder {
     public void bindMessage(Message model) {
         targetMessage = model;
 
+        // Decrypt given message
         final String decryptedMessage = model.decrypt(itemView.getContext());
         tvMessageText.setText(decryptedMessage);
 
+        // If message is from another user, attempt to verify the message's hash
         if (ivVerified != null) {
             ivVerified.setVisibility(View.INVISIBLE);
             if (decryptedMessage != null) {

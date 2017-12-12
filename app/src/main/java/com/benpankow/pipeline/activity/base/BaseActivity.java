@@ -9,8 +9,9 @@ import com.google.firebase.auth.FirebaseAuth;
 
 /**
  * Created by Ben Pankow on 12/2/17.
+ *
+ * A basic activity that handles common functionality
  */
-
 public abstract class BaseActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authListener;
