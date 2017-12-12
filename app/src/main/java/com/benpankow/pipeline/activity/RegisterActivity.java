@@ -3,10 +3,12 @@ package com.benpankow.pipeline.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.benpankow.pipeline.R;
 import com.benpankow.pipeline.activity.base.UnauthenticatedActivity;
@@ -27,6 +29,8 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
+
+import java8.util.function.Consumer;
 
 /**
  * Created by Ben Pankow on 12/2/17.
@@ -57,9 +61,36 @@ public class RegisterActivity extends UnauthenticatedActivity {
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String email = etEmail.getText().toString();
-                String password = etPassword.getText().toString();
-                AuthenticationHelper.register(RegisterActivity.this, email, password);
+                final String email = etEmail.getText().toString();
+                final String password = etPassword.getText().toString();
+                final String username = etUsername.getText().toString();
+                if (username.length() < 4) {
+                    Toast.makeText(
+                            RegisterActivity.this,
+                            R.string.err_short_username,
+                            Toast.LENGTH_SHORT
+                    ).show();
+                } else {
+                    DatabaseHelper.doesUserExistWithUsername(username, new Consumer<Boolean>() {
+                        @Override
+                        public void accept(Boolean userExists) {
+                            // If user exists, display error message
+                            if (userExists) {
+                                Toast.makeText(
+                                        RegisterActivity.this,
+                                        R.string.err_username_taken,
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                            } else {
+                                AuthenticationHelper.register(
+                                        RegisterActivity.this,
+                                        email,
+                                        password
+                                );
+                            }
+                        }
+                    });
+                }
             }
         });
 

@@ -243,6 +243,27 @@ public class DatabaseHelper {
     }
 
     /**
+     * Calls back whether a user exists with the given username
+     *
+     * @param username The username to search for
+     * @param callback A Callback taking a Boolean, whether the user exists
+     */
+    public static void doesUserExistWithUsername(String username, final Consumer<Boolean> callback) {
+        queryUserByUsername(username).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean userExists = dataSnapshot.hasChildren();
+                callback.accept(userExists);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                callback.accept(false);
+            }
+        });
+    }
+
+    /**
      * Gets a Query that queries all messages for a given conversation and user
      *
      * @param convoid The conversation whose messages to get

@@ -29,4 +29,6 @@
     <string name="err_unknown">Unknown error</string>
     <string name="err_blank">Blank email or password</string>
     <string name="err_no_credentials">No matching user credentials found</string>
+    <string name="err_short_username">Username must be more than 6 characters</string>
+    <string name="err_username_taken">Username already taken</string>
 </resources>
