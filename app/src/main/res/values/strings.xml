@@ -24,4 +24,9 @@
     <string name="title">Title</string>
     <string name="save_convo_settings">Save Conversation Settings</string>
     <string name="save_user_settings">Save User Settings</string>
+    <string name="err_email_in_use">Email already in use</string>
+    <string name="err_invalid_email">Invalid email</string>
+    <string name="err_unknown">Unknown error</string>
+    <string name="err_blank">Blank email or password</string>
+    <string name="err_no_credentials">No matching user credentials found</string>
 </resources>

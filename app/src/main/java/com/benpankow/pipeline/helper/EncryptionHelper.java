@@ -136,7 +136,7 @@ public class EncryptionHelper {
     }
 
     /**
-     * Produces the alias that a user's private key will be stored under
+     * Produces the alias that a user's private key will be stored under.
      *
      * @param user The user whose key we're storing
      * @return A string name for the alias that a private key will be stored under
@@ -219,7 +219,7 @@ public class EncryptionHelper {
     }
 
     /**
-     * Signs a series of bytes using the user's private key
+     * Signs a series of bytes using the user's private key.
      *
      * @param message The message to sign
      * @param myPrivateKey The user's private key, to sign the message
@@ -228,13 +228,15 @@ public class EncryptionHelper {
     public static byte[] sign(byte[] message, PrivateKey myPrivateKey) throws
             NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException,
             NoSuchPaddingException, InvalidKeyException {
+
+        // Create a shorter hash of the message
         MessageDigest md = MessageDigest.getInstance(MD5);
         byte[] messageDigest = md.digest(message);
 
+        // Encrypt the message with the user's private key
         Cipher rsaCipher = Cipher.getInstance(RSA);
         rsaCipher.init(Cipher.ENCRYPT_MODE, myPrivateKey);
-        byte[] signedDigest = rsaCipher.doFinal(messageDigest);
-        return signedDigest;
+        return rsaCipher.doFinal(messageDigest);
     }
 
     /**
@@ -248,9 +250,12 @@ public class EncryptionHelper {
     public static boolean verifySignature(byte[] message, byte[] signedDigest, PublicKey senderPublicKey)
             throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
             BadPaddingException, IllegalBlockSizeException {
+
+        // Create a personal copy of the message hash
         MessageDigest md = MessageDigest.getInstance(MD5);
         byte[] messageDigest = md.digest(message);
 
+        // Using their public key, decrypt their hash and compare
         Cipher rsaCipher = Cipher.getInstance(RSA);
         rsaCipher.init(Cipher.DECRYPT_MODE, senderPublicKey);
         byte[] decryptedDigest = rsaCipher.doFinal(signedDigest);

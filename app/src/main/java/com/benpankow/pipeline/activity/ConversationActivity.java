@@ -126,15 +126,17 @@ public class ConversationActivity extends AuthenticatedActivity {
             @Override
             public void accept(Conversation convo) {
                 conversation = convo;
-                convo.getTitle(new Consumer<String>() {
-                    @Override
-                    public void accept(String s) {
-                        ActionBar actionBar = ConversationActivity.this.getSupportActionBar();
-                        if (actionBar != null) {
-                            actionBar.setTitle(s);
+                if (convo != null) {
+                    convo.getTitle(new Consumer<String>() {
+                        @Override
+                        public void accept(String s) {
+                            ActionBar actionBar = ConversationActivity.this.getSupportActionBar();
+                            if (actionBar != null) {
+                                actionBar.setTitle(s);
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
     }

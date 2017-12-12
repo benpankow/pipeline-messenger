@@ -31,14 +31,14 @@
 
     <ImageView
         android:id="@+id/iv_verified"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
+        android:layout_width="13dp"
+        android:layout_height="13dp"
         android:layout_marginBottom="2dp"
         android:layout_marginEnd="64dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="6dp"
         android:background="@drawable/rounded_rectangle_right"
         android:backgroundTint="@color/colorAccent"
-        android:padding="2dp"
+        android:padding="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

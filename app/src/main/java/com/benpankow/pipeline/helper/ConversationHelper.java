@@ -55,6 +55,12 @@ public class ConversationHelper {
                 });
     }
 
+    /**
+     * Creates a group between the given users, and then opens it
+     *
+     * @param context The context that this action is triggered in
+     * @param uids A list of uids of the users to add to the group
+     */
     public static void createAndOpenGroup(final Context context,
                                           final String[] uids) {
         DatabaseHelper.createGroup(

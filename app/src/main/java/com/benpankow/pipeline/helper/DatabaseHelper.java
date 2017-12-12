@@ -45,8 +45,9 @@ import java8.util.function.Consumer;
 
 /**
  * Created by Ben Pankow on 12/2/17.
+ *
+ * Helps with interactions with the Firebase database
  */
-
 public class DatabaseHelper {
 
     private static final String USERS_KEY = "users";
@@ -413,7 +414,8 @@ public class DatabaseHelper {
 
     /**
      * Adds a message to an existing conversation for all users in that conversation
-     *  @param convoid The convoid of the conversation to send the message to
+     *
+     * @param convoid The convoid of the conversation to send the message to
      * @param message The Message object to send
      * @param sender The User who sent this message
      * @param context The context that this message is sent from
@@ -425,6 +427,7 @@ public class DatabaseHelper {
         final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
         try {
+            // First, attempt to sign the message
             message.sign(context);
 
             getUsersInConversation(convoid, new Consumer<List<String>>() {
@@ -434,13 +437,14 @@ public class DatabaseHelper {
                        getUser(uid, new Consumer<User>() {
                             @Override
                             public void accept(User user) {
-                                byte[] encodedKey = Base64.decode(user.publicKey, Base64.DEFAULT);
-                                X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(encodedKey);
-
                                 try {
+                                    // Decode the target user's public key
+                                    byte[] encodedKey = Base64.decode(user.publicKey, Base64.DEFAULT);
+                                    X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(encodedKey);
                                     KeyFactory rsaFactory = KeyFactory.getInstance("RSA");
                                     PublicKey publicKey = rsaFactory.generatePublic(X509publicKey);
 
+                                    // Create a copy of the message for the target user & encrypt
                                     Message messageForUser = message.clone();
                                     byte[][] encryptedMessage = EncryptionHelper.encrypt(
                                             messageForUser.text.getBytes(),
@@ -455,18 +459,21 @@ public class DatabaseHelper {
                                             Base64.DEFAULT
                                     );
 
+                                    // Adds the message to the list of messages
                                     database.child(MESSAGES_KEY)
                                             .child(convoid)
                                             .child(uid)
                                             .push()
                                             .setValue(messageForUser);
 
+                                    // Add the message as a preview for this conversation
                                     database.child(CONVERSATIONS_KEY)
                                             .child(convoid)
                                             .child("recentMessages")
                                             .child(uid)
                                             .setValue(messageForUser);
 
+                                    // Update the timestamp for this conversation
                                     database.child(CONVERSATIONS_KEY)
                                             .child(convoid)
                                             .child("timestamp")
