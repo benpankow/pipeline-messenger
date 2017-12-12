@@ -5,13 +5,16 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.benpankow.pipeline.R;
 import com.benpankow.pipeline.activity.base.AuthenticatedActivity;
@@ -85,6 +88,17 @@ public class ConversationActivity extends AuthenticatedActivity {
         rvMessages.setAdapter(messageAdapter);
 
         etMessage = findViewById(R.id.et_message);
+        etMessage.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                //https://stackoverflow.com/a/19217624
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    btnSendMessage.performClick();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         btnSendMessage = findViewById(R.id.btn_send_message);
         btnSendMessage.setOnClickListener(new View.OnClickListener() {
