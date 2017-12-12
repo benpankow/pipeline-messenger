@@ -41,10 +41,21 @@ public class Message {
     public String key;
     public String signature;
 
+    /**
+     * Whether or not this message was sent by the current user
+     *
+     * @return Whether the user sent this message
+     */
     public boolean sentByCurrentUser() {
-        return FirebaseAuth.getInstance().getUid().equals(senderUid);
+        String uid = FirebaseAuth.getInstance().getUid();
+        return uid != null && uid.equals(senderUid);
     }
 
+    /**
+     * Get the Date this conversation was sent
+     *
+     * @return The last updated Date
+     */
     public Date getDate(){
         if (timestamp == null) {
             return null;
@@ -56,6 +67,11 @@ public class Message {
         }
     }
 
+    /**
+     * Clones this message
+     *
+     * @return A copy of this message
+     */
     public Message clone() {
         Message clone = new Message();
         clone.senderUid = senderUid;
@@ -65,7 +81,12 @@ public class Message {
         return clone;
     }
 
-
+    /**
+     * Attempts to decrypt this message - heavy lifting done in EncryptionHelper
+     *
+     * @param context The context this is being executed from
+     * @return The plaintext of the message, or null if decryption fails
+     */
     public String decrypt(Context context) {
         try {
             byte[][] encryptedMessageData = new byte[][] {
@@ -89,23 +110,35 @@ public class Message {
         return null;
     }
 
+    /**
+     * Sets the internal signature of this message, signing it with the user's private key
+     *
+     * @param context The context this is being executed from
+     */
     public void sign(Context context) throws CertificateException, NoSuchAlgorithmException,
             KeyStoreException, UnrecoverableEntryException, NoSuchProviderException,
             InvalidAlgorithmParameterException, IOException, IllegalBlockSizeException,
             InvalidKeyException, NoSuchPaddingException, BadPaddingException {
         byte[] signature =
                 EncryptionHelper.sign(text.getBytes(), EncryptionHelper.getPrivateKey(context));
-        Log.w("TAG", "sign: signed!" + Base64.encodeToString(signature, Base64.DEFAULT));
         this.signature = Base64.encodeToString(signature, Base64.DEFAULT);
     }
 
+
+    /**
+     * Verifies the signature on this message is valid
+     *
+     * @param decryptedMessage The decrypted version of this message
+     * @param callback A callback that takes a boolean, whether the signature was valid
+     */
     public void checkSignature(final String decryptedMessage, final Consumer<Boolean> callback) {
         DatabaseHelper.getUser(senderUid, new Consumer<User>() {
             @Override
             public void accept(User user) {
-                byte[] encodedKey = Base64.decode(user.publicKey, Base64.DEFAULT);
-                X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(encodedKey);
                 try {
+                    // Decodes the sender's public key
+                    byte[] encodedKey = Base64.decode(user.publicKey, Base64.DEFAULT);
+                    X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(encodedKey);
                     KeyFactory rsaFactory = KeyFactory.getInstance("RSA");
                     PublicKey publicKey = rsaFactory.generatePublic(X509publicKey);
 

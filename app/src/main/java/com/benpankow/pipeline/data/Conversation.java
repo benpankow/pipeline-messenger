@@ -31,6 +31,12 @@ public class Conversation {
     public HashMap<String, Message> recentMessages;
     public Object timestamp;
 
+    /**
+     * Gets the most recent message sent to the given user
+     *
+     * @param uid The user whose preview message instance to get
+     * @return The most recent message in this conversation for the given user
+     */
     public Message getRecentMessage(String uid) {
         if (recentMessages == null) {
             recentMessages = new HashMap<>();
@@ -41,6 +47,11 @@ public class Conversation {
         return null;
     }
 
+    /**
+     * Adds a list of participants to this conversation
+     *
+     * @param uids A list of uids to add
+     */
     public void addParticipants(String... uids) {
         if (participants == null) {
             participants = new ArrayList<>();
@@ -48,6 +59,11 @@ public class Conversation {
         participants.addAll(Arrays.asList(uids));
     }
 
+    /**
+     * Gets the title for this conversation - either auto-generated or one that was user-set
+     *
+     * @param callback A callback that returns the title
+     */
     public void getTitle(Consumer<String> callback) {
         if (title != null) {
             callback.accept(title);
@@ -56,6 +72,12 @@ public class Conversation {
         }
     }
 
+    /**
+     * Generates a default title for a conversation - the user's names separated w/ commas and &
+     * i.e., Ben, Joe, Eric & Brian
+     *
+     * @param callback A callback that takes the generated title
+     */
     public void generateTitle(final Consumer<String> callback) {
         String uid = FirebaseAuth.getInstance().getUid();
 
@@ -89,6 +111,13 @@ public class Conversation {
         }
     }
 
+    /**
+     * Get the preview text for this conversatin, automatically decrypting it
+     *
+     * @param uid The current user's uid
+     * @param context The current application context
+     * @return A plaintext, decrypted version of the most recent message
+     */
     public String getPreviewMessage(String uid, Context context) {
         Message previewMessage = getRecentMessage(uid);
         if (previewMessage != null) {
@@ -98,6 +127,12 @@ public class Conversation {
         }
     }
 
+    /**
+     * Get a string version of this conversation's timestamp in the format HH:MM AM/PM
+     *
+     * @param uid The current user's uid
+     * @return A formatted timestamp
+     */
     public String getTimestamp(String uid) {
         Date date = getDate();
         if (date == null) {
@@ -112,6 +147,11 @@ public class Conversation {
         return sdf.format(date);
     }
 
+    /**
+     * Get the Date this conversation was last updated
+     *
+     * @return The last updated Date
+     */
     public Date getDate(){
         if (timestamp == null) {
             return null;
