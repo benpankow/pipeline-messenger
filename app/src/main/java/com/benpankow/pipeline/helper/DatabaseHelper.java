@@ -202,7 +202,7 @@ public class DatabaseHelper {
      */
     public static Query queryConversationsForUser(String uid) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        return database.child(USER_CONVERSATIONS_KEY).child(uid);
+        return database.child(USER_CONVERSATIONS_KEY).child(uid).orderByValue();
     }
 
     /**
@@ -415,12 +415,12 @@ public class DatabaseHelper {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        HashMap<String, Boolean> conversationList = dataSnapshot.getValue
-                                (new GenericTypeIndicator<HashMap<String, Boolean>>() {});
+                        HashMap<String, Object> conversationList = dataSnapshot.getValue
+                                (new GenericTypeIndicator<HashMap<String, Object>>() {});
                         if (conversationList == null) {
                             conversationList = new HashMap<>();
                         }
-                        conversationList.put(convoid, true);
+                        conversationList.put(convoid, ServerValue.TIMESTAMP);
                         database.child(USER_CONVERSATIONS_KEY)
                                 .child(uid)
                                 .setValue(conversationList);
@@ -454,6 +454,11 @@ public class DatabaseHelper {
             getUsersInConversation(convoid, new Consumer<List<String>>() {
                 @Override
                 public void accept(List<String> uids) {
+                    // Update the timestamp for this conversation
+                    database.child(CONVERSATIONS_KEY)
+                            .child(convoid)
+                            .child("timestamp")
+                            .setValue(ServerValue.TIMESTAMP);
                     for (final String uid : uids) {
                        getUser(uid, new Consumer<User>() {
                             @Override
@@ -494,11 +499,13 @@ public class DatabaseHelper {
                                             .child(uid)
                                             .setValue(messageForUser);
 
-                                    // Update the timestamp for this conversation
-                                    database.child(CONVERSATIONS_KEY)
+                                    // Update the user-specific timestamp for this conversation
+                                    // (for sorting purposes on home screen)
+                                    database.child(USER_CONVERSATIONS_KEY)
+                                            .child(uid)
                                             .child(convoid)
-                                            .child("timestamp")
                                             .setValue(ServerValue.TIMESTAMP);
+
 
                                     if (!uid.equals(message.senderUid)) {
                                         Notification notification = new Notification();

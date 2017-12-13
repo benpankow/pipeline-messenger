@@ -77,7 +77,10 @@ public class ConversationListActivity extends AuthenticatedActivity {
 
         rvConversations = findViewById(R.id.rv_conversations);
         rvConversations.setHasFixedSize(true);
-        rvConversations.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
+        rvConversations.setLayoutManager(layoutManager);
 
         // Load all conversations that this user is in
         FirebaseRecyclerOptions<Conversation> conversationOptions =
