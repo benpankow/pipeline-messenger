@@ -41,6 +41,21 @@ public class Message {
     public String key;
     public String signature;
 
+    public Message() {}
+
+    public Message(String senderUid, String text, Object timestamp, String key, String signature) {
+        this.senderUid = senderUid;
+        this.text = text;
+        this.timestamp = timestamp;
+        this.key = key;
+        this.signature = signature;
+    }
+
+    public Message(String senderUid, String text, Object timestamp) {
+        this(senderUid, text, timestamp, null, null);
+    }
+
+
     /**
      * Whether or not this message was sent by the current user
      *
@@ -73,12 +88,7 @@ public class Message {
      * @return A copy of this message
      */
     public Message clone() {
-        Message clone = new Message();
-        clone.senderUid = senderUid;
-        clone.text = text;
-        clone.timestamp = timestamp;
-        clone.signature = signature;
-        return clone;
+        return new Message(senderUid, text, timestamp, key, signature);
     }
 
     /**
@@ -137,7 +147,7 @@ public class Message {
             public void accept(User user) {
                 try {
                     // Decodes the sender's public key
-                    byte[] encodedKey = Base64.decode(user.publicKey, Base64.DEFAULT);
+                    byte[] encodedKey = Base64.decode(user.getPublicKey(), Base64.DEFAULT);
                     X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(encodedKey);
                     KeyFactory rsaFactory = KeyFactory.getInstance("RSA");
                     PublicKey publicKey = rsaFactory.generatePublic(X509publicKey);
@@ -156,5 +166,45 @@ public class Message {
                 }
             }
         });
+    }
+
+    public String getSenderUid() {
+        return senderUid;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public Object getTimestamp() {
+        return timestamp;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public void setSenderUid(String senderUid) {
+        this.senderUid = senderUid;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public void setTimestamp(Object timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
     }
 }

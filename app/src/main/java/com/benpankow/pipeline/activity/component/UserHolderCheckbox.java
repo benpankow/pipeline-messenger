@@ -36,11 +36,11 @@ public class UserHolderCheckbox extends RecyclerView.ViewHolder {
             public void onClick(View view) {
                 // On click, add user + go back to conversation list
                 if (targetUser != null) {
-                    if (addedUsers.contains(targetUser.uid)) {
-                        addedUsers.remove(targetUser.uid);
+                    if (addedUsers.contains(targetUser.getUid())) {
+                        addedUsers.remove(targetUser.getUid());
                         cbUser.setChecked(false);
                     } else {
-                        addedUsers.add(targetUser.uid);
+                        addedUsers.add(targetUser.getUid());
                         cbUser.setChecked(true);
                     }
                 }
@@ -51,14 +51,14 @@ public class UserHolderCheckbox extends RecyclerView.ViewHolder {
     public void bindUser(User model) {
         targetUser = model;
         if (targetUser != null) {
-            tvNickname.setText(targetUser.nickname);
-            tvUsername.setText(String.format("@%s", targetUser.username));
+            tvNickname.setText(targetUser.getNickname());
+            tvUsername.setText(String.format("@%s", targetUser.getUsername()));
         }
 
     }
 
     public void bindSet(Set<String> addedUsers) {
         this.addedUsers = addedUsers;
-        cbUser.setChecked(addedUsers.contains(targetUser.uid));
+        cbUser.setChecked(addedUsers.contains(targetUser.getUid()));
     }
 }

@@ -42,9 +42,10 @@ public class UserHolderRemovable extends RecyclerView.ViewHolder {
         this.tvNickname = itemView.findViewById(R.id.tv_user_nickname);
         this.tvUsername = itemView.findViewById(R.id.tv_user_username);
         this.slBase = itemView.findViewById(R.id.sl_base);
+
+        // Enable swiping left to remove user
         slBase.setShowMode(SwipeLayout.ShowMode.PullOut);
         slBase.setRightSwipeEnabled(false);
-
         slBase.addDrag(SwipeLayout.DragEdge.Left, itemView.findViewById(R.id.cl_trash));
 
         // On swipe, remove conversation
@@ -73,8 +74,9 @@ public class UserHolderRemovable extends RecyclerView.ViewHolder {
 
             @Override
             public void onHandRelease(SwipeLayout layout, float xvel, float yvel) {
+                // Remove user from conversation if swipe right
                 if (isSwiped && targetUser != null) {
-                    String uid = targetUser.uid;
+                    String uid = targetUser.getUid();
                     if (uid != null && targetConvoid != null) {
                         DatabaseHelper.removeConversationFromUser(uid, targetConvoid);
                     }
@@ -86,10 +88,10 @@ public class UserHolderRemovable extends RecyclerView.ViewHolder {
     public void bindUser(User model) {
         targetUser = model;
         if (targetUser != null) {
-            tvNickname.setText(targetUser.nickname);
-            tvUsername.setText(String.format("@%s", targetUser.username));
+            tvNickname.setText(targetUser.getNickname());
+            tvUsername.setText(String.format("@%s", targetUser.getUsername()));
             String currentUid = FirebaseAuth.getInstance().getUid();
-            slBase.setLeftSwipeEnabled(!targetUser.uid.equals(currentUid));
+            slBase.setLeftSwipeEnabled(!targetUser.getUid().equals(currentUid));
         }
     }
 

@@ -3,6 +3,7 @@ package com.benpankow.pipeline.helper;
 import android.content.Context;
 import android.util.Base64;
 
+import com.benpankow.pipeline.R;
 import com.benpankow.pipeline.data.Conversation;
 import com.benpankow.pipeline.data.ConversationType;
 import com.benpankow.pipeline.data.Message;
@@ -351,6 +352,14 @@ public class DatabaseHelper {
     }
 
 
+    /**
+     * Creates a conversation between a number of users, and adds it to each of their
+     * conversation lists
+     *
+     * @param uids A list of uids to add to the conversation
+     * @param callback A callback called with the convoid of the produced conversation
+     * @param groupMessage Whether or not to make a group message
+     */
     public static void createConversation(String[] uids, Consumer<String> callback, boolean groupMessage) {
         if (uids == null) {
             callback.accept(null);
@@ -365,16 +374,13 @@ public class DatabaseHelper {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
         DatabaseReference conversationRef = database.child(CONVERSATIONS_KEY).push();
-        Conversation conversation = new Conversation();
-        if (groupMessage) {
-            conversation.setConversationType(ConversationType.GROUP_MESSAGE);
-        } else {
-            conversation.setConversationType(ConversationType.DIRECT_MESSAGE);
-        }
+
+        ConversationType type = groupMessage ? ConversationType.GROUP_MESSAGE :
+                ConversationType.DIRECT_MESSAGE;
+        Conversation conversation = new Conversation(ServerValue.TIMESTAMP, type);
         conversation.addParticipants(uids);
-        conversation.timestamp = ServerValue.TIMESTAMP;
         String conversationKey = conversationRef.getKey();
-        conversation.convoid = conversationKey;
+        conversation.setConvoid(conversationKey);
         conversationRef.setValue(conversation);
 
         for (String uid : uids) {
@@ -471,8 +477,8 @@ public class DatabaseHelper {
                         Conversation conversation = dataSnapshot.getValue(Conversation.class);
                         if (conversation != null
                                 && conversation.getConversationType() == ConversationType.GROUP_MESSAGE
-                                && conversation.participants != null) {
-                            conversation.participants.remove(uid);
+                                && conversation.getParticipants() != null) {
+                            conversation.getParticipants().remove(uid);
                         }
                         database.child(CONVERSATIONS_KEY)
                                 .child(convoid)
@@ -539,7 +545,7 @@ public class DatabaseHelper {
                             public void accept(User user) {
                                 try {
                                     // Decode the target user's public key
-                                    byte[] encodedKey = Base64.decode(user.publicKey, Base64.DEFAULT);
+                                    byte[] encodedKey = Base64.decode(user.getPublicKey(), Base64.DEFAULT);
                                     X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(encodedKey);
                                     KeyFactory rsaFactory = KeyFactory.getInstance("RSA");
                                     PublicKey publicKey = rsaFactory.generatePublic(X509publicKey);
@@ -547,17 +553,17 @@ public class DatabaseHelper {
                                     // Create a copy of the message for the target user & encrypt
                                     Message messageForUser = message.clone();
                                     byte[][] encryptedMessage = EncryptionHelper.encrypt(
-                                            messageForUser.text.getBytes(),
+                                            messageForUser.getText().getBytes(),
                                             publicKey
                                     );
-                                    messageForUser.text = Base64.encodeToString(
+                                    messageForUser.setText(Base64.encodeToString(
                                             encryptedMessage[0],
                                             Base64.DEFAULT
-                                    );
-                                    messageForUser.key = Base64.encodeToString(
+                                    ));
+                                    messageForUser.setKey(Base64.encodeToString(
                                             encryptedMessage[1],
                                             Base64.DEFAULT
-                                    );
+                                    ));
 
                                     // Adds the message to the list of messages
                                     database.child(MESSAGES_KEY)
@@ -581,12 +587,14 @@ public class DatabaseHelper {
                                             .setValue(ServerValue.TIMESTAMP);
 
 
-                                    if (!uid.equals(message.senderUid)) {
-                                        Notification notification = new Notification();
-                                        notification.message = "New message from " + sender.nickname;
-                                        notification.recipient = uid;
-                                        notification.sender = sender.nickname;
-                                        notification.convoid = convoid;
+                                    if (!uid.equals(message.getSenderUid())) {
+                                        String messageText = context.getString(R.string.new_msg);
+                                        Notification notification = new Notification(
+                                                uid,
+                                                String.format(messageText, sender.getNickname()),
+                                                sender.getNickname(),
+                                                convoid
+                                        );
 
                                         database.child(NOTIFICATIONS_KEY)
                                                 .push()
@@ -627,7 +635,7 @@ public class DatabaseHelper {
                         if (conversation == null) {
                             callback.accept(new ArrayList<String>());
                         } else {
-                            callback.accept(new ArrayList<>(conversation.participants.keySet()));
+                            callback.accept(new ArrayList<>(conversation.getParticipants().keySet()));
                         }
                     }
 

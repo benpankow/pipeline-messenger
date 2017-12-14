@@ -112,11 +112,12 @@ public class ConversationActivity extends AuthenticatedActivity {
             @Override
             public void onClick(View view) {
                 // Create and send message
-                Message message = new Message();
-                message.text = etMessage.getText().toString().trim();
-                message.senderUid = uid;
-                message.timestamp = ServerValue.TIMESTAMP;
-                if (message.text.length() > 0) {
+                Message message = new Message(
+                        uid,
+                        etMessage.getText().toString().trim(),
+                        ServerValue.TIMESTAMP
+                );
+                if (message.getText().length() > 0) {
                     DatabaseHelper.addMessageToConversation(
                             convoid,
                             message,
@@ -134,6 +135,7 @@ public class ConversationActivity extends AuthenticatedActivity {
             public void accept(Conversation convo) {
                 conversation = convo;
                 if (convo != null) {
+                    // Update title if conversation title changes
                     convo.getTitle(new Consumer<String>() {
                         @Override
                         public void accept(String s) {
@@ -143,6 +145,15 @@ public class ConversationActivity extends AuthenticatedActivity {
                             }
                         }
                     });
+
+                    // Return to conversation list if removed from conversation
+                    if (!convo.getParticipants().containsKey(uid)) {
+                        Intent convoListActivity = new Intent(
+                                ConversationActivity.this,
+                                ConversationListActivity.class
+                        );
+                        ConversationActivity.this.startActivity(convoListActivity);
+                    }
                 }
             }
         });
@@ -162,12 +173,12 @@ public class ConversationActivity extends AuthenticatedActivity {
                     && conversation.getConversationType() == ConversationType.DIRECT_MESSAGE) {
                 Intent settingsIntent =
                         new Intent(ConversationActivity.this, DirectMessageSettingsActivity.class);
-                settingsIntent.putExtra("convoid", conversation.convoid);
+                settingsIntent.putExtra("convoid", conversation.getConvoid());
                 ConversationActivity.this.startActivity(settingsIntent);
             } else {
                 Intent settingsIntent =
                         new Intent(ConversationActivity.this, GroupMessageSettingsActivity.class);
-                settingsIntent.putExtra("convoid", conversation.convoid);
+                settingsIntent.putExtra("convoid", conversation.getConvoid());
                 ConversationActivity.this.startActivity(settingsIntent);
             }
 

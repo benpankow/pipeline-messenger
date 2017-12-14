@@ -88,7 +88,7 @@ public class CreateGroupActivity extends AuthenticatedActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Next button, creates group
-        if (item.getItemId() == R.id.item_next) {
+        if (item.getItemId() == R.id.item_next && addedUsers.size() > 1) {
             ConversationHelper.createAndOpenGroup(
                     CreateGroupActivity.this,
                     addedUsers.toArray(new String[0])

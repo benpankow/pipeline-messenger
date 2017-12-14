@@ -34,6 +34,8 @@ public class DirectMessageSettingsActivity extends AuthenticatedActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_direct_message_settings);
 
+        final String uid = getAuth().getUid();
+
         Intent intent = getIntent();
         final String convoid = intent.getStringExtra("convoid");
 
@@ -50,9 +52,9 @@ public class DirectMessageSettingsActivity extends AuthenticatedActivity {
                 if (conversation != null) {
                     String intendedTitle = etConversationTitle.getText().toString().trim();
                     if (intendedTitle.length() > 0) {
-                        conversation.title = intendedTitle;
+                        conversation.setTitle(intendedTitle);
                     } else {
-                        conversation.title = null;
+                        conversation.setTitle(null);
                     }
                     DatabaseHelper.updateConversation(convoid, conversation);
                 }
@@ -63,25 +65,37 @@ public class DirectMessageSettingsActivity extends AuthenticatedActivity {
             @Override
             public void accept(Conversation convo) {
                 conversation = convo;
-                if (conversation.title != null) {
-                    etConversationTitle.setText(conversation.title);
-                }
-                conversation.generateTitle(new Consumer<String>() {
-                    @Override
-                    public void accept(String generatedTitle) {
-                        etConversationTitle.setHint(generatedTitle);
+                if (convo != null) {
+                    if (conversation.getTitle() != null) {
+                        etConversationTitle.setText(conversation.getTitle());
                     }
-                });
-                conversation.getOtherUser(new Consumer<User>() {
-                    @Override
-                    public void accept(User user) {
-                        if (user != null) {
-                            tvNickname.setText(user.nickname);
-                            tvUsername.setText(user.username);
+                    // Set title hint
+                    conversation.generateTitle(new Consumer<String>() {
+                        @Override
+                        public void accept(String generatedTitle) {
+                            etConversationTitle.setHint(generatedTitle);
                         }
-                    }
-                });
+                    });
+                    // Set other user's information
+                    conversation.getOtherUser(new Consumer<User>() {
+                        @Override
+                        public void accept(User user) {
+                            if (user != null) {
+                                tvNickname.setText(user.getNickname());
+                                tvUsername.setText(user.getUsername());
+                            }
+                        }
+                    });
 
+                    // Return to conversation list if removed from conversation
+                    if (!convo.getParticipants().containsKey(uid)) {
+                        Intent convoListActivity = new Intent(
+                                DirectMessageSettingsActivity.this,
+                                ConversationListActivity.class
+                        );
+                        DirectMessageSettingsActivity.this.startActivity(convoListActivity);
+                    }
+                }
             }
         });
     }

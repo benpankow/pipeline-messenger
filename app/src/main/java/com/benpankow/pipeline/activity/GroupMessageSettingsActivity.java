@@ -39,6 +39,8 @@ public class GroupMessageSettingsActivity extends AuthenticatedActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_message_settings);
 
+        final String uid = getAuth().getUid();
+
         Intent intent = getIntent();
         final String convoid = intent.getStringExtra("convoid");
 
@@ -52,9 +54,9 @@ public class GroupMessageSettingsActivity extends AuthenticatedActivity {
                 if (conversation != null) {
                     String intendedTitle = etConversationTitle.getText().toString().trim();
                     if (intendedTitle.length() > 0) {
-                        conversation.title = intendedTitle;
+                        conversation.setTitle(intendedTitle);
                     } else {
-                        conversation.title = null;
+                        conversation.setTitle(null);
                     }
                     DatabaseHelper.updateConversation(convoid, conversation);
                 }
@@ -65,23 +67,34 @@ public class GroupMessageSettingsActivity extends AuthenticatedActivity {
             @Override
             public void accept(Conversation convo) {
                 conversation = convo;
-                if (conversation.title != null) {
-                    etConversationTitle.setText(conversation.title);
-                }
-                conversation.generateTitle(new Consumer<String>() {
-                    @Override
-                    public void accept(String generatedTitle) {
-                        etConversationTitle.setHint(generatedTitle);
+                if (convo != null) {
+                    if (conversation.getTitle() != null) {
+                        etConversationTitle.setText(conversation.getTitle());
                     }
-                });
+                    // Set title hint
+                    conversation.generateTitle(new Consumer<String>() {
+                        @Override
+                        public void accept(String generatedTitle) {
+                            etConversationTitle.setHint(generatedTitle);
+                        }
+                    });
 
+                    // Return to conversation list if removed from conversation
+                    if (!convo.getParticipants().containsKey(uid)) {
+                        Intent convoListActivity = new Intent(
+                                GroupMessageSettingsActivity.this,
+                                ConversationListActivity.class
+                        );
+                        GroupMessageSettingsActivity.this.startActivity(convoListActivity);
+                    }
+                }
             }
         });
 
         rvConvoMembers = findViewById(R.id.rv_convo_members);
         rvConvoMembers.setLayoutManager(new LinearLayoutManager(this));
 
-        // Load all members of this conversation
+        // Load all members of this conversation to allow the user to remove people
         FirebaseRecyclerOptions<User> conversationOptions =
                 new FirebaseRecyclerOptions.Builder<User>()
                         .setIndexedQuery(DatabaseHelper.queryUsersInConversation(convoid),

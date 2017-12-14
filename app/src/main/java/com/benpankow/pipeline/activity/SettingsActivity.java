@@ -32,9 +32,9 @@ public class SettingsActivity extends AuthenticatedActivity {
             public void onClick(View view) {
                 String intendedNickname = etNickname.getText().toString().trim();;
                 if (intendedNickname.length() > 0) {
-                    userData.nickname = intendedNickname;
+                    userData.setNickname(intendedNickname);
                 }
-                DatabaseHelper.updateUser(userData.uid, userData);
+                DatabaseHelper.updateUser(userData.getUid(), userData);
                 finish();
             }
         });
@@ -58,6 +58,6 @@ public class SettingsActivity extends AuthenticatedActivity {
     @Override
     protected void onUserDataObtained() {
         super.onUserDataUpdate();
-        etNickname.setText(userData.nickname);
+        etNickname.setText(userData.getNickname());
     }
 }

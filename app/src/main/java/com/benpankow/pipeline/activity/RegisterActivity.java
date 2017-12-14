@@ -118,15 +118,18 @@ public class RegisterActivity extends UnauthenticatedActivity {
                     String deviceToken = FirebaseInstanceId.getInstance().getToken();
 
                     // Set up user object
-                    User userObj = new User();
-                    userObj.deviceToken = deviceToken;
-                    userObj.uid = user.getUid();
-                    userObj.email = user.getEmail();
-                    userObj.username = etUsername.getText().toString();
-                    userObj.usernameLower = userObj.username.toLowerCase();
-                    userObj.nickname = userObj.username;
+                    String username = etUsername.getText().toString();;
+                    User userObj = new User(
+                            user.getEmail(),
+                            username,
+                            username.toLowerCase(),
+                            user.getUid(),
+                            username,
+                            deviceToken,
+                            null
+                    );
 
-                    DatabaseHelper.updateUser(userObj.uid, userObj);
+                    DatabaseHelper.updateUser(userObj.getUid(), userObj);
                     try {
                         KeyStore keyStore = EncryptionHelper.getKeystore();
                         EncryptionHelper.generateKeyPair(keyStore, RegisterActivity.this, user);

@@ -45,8 +45,8 @@ public class UserHolder extends RecyclerView.ViewHolder {
                         public void accept(final User loggedInUser) {
                         ConversationHelper.openConversationBetween(
                                 itemView.getContext(),
-                                loggedInUser.uid,
-                                targetUser.uid
+                                loggedInUser.getUid(),
+                                targetUser.getUid()
                         );
                         }
                     });
@@ -58,8 +58,8 @@ public class UserHolder extends RecyclerView.ViewHolder {
     public void bindUser(User model) {
         targetUser = model;
         if (targetUser != null) {
-            tvNickname.setText(targetUser.nickname);
-            tvUsername.setText(String.format("@%s", targetUser.username));
+            tvNickname.setText(targetUser.getNickname());
+            tvUsername.setText(String.format("@%s", targetUser.getUsername()));
         }
 
     }

@@ -53,7 +53,7 @@ public class ConversationHolder extends RecyclerView.ViewHolder {
                 if (!isSwiped && !wasRemoved) {
                     Intent conversationActivity =
                             new Intent(itemView.getContext(), ConversationActivity.class);
-                    conversationActivity.putExtra("convoid", conversation.convoid);
+                    conversationActivity.putExtra("convoid", conversation.getConvoid());
                     itemView.getContext().startActivity(conversationActivity);
                 }
             }
@@ -88,8 +88,8 @@ public class ConversationHolder extends RecyclerView.ViewHolder {
                 if (isSwiped) {
                     String uid = FirebaseAuth.getInstance().getUid();
                     if (uid != null && conversation != null) {
+                        DatabaseHelper.removeConversationFromUser(uid, conversation.getConvoid());
                         wasRemoved = true;
-                        DatabaseHelper.removeConversationFromUser(uid, conversation.convoid);
                     }
                 }
             }

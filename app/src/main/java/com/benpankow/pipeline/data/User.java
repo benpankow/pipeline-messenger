@@ -13,4 +13,48 @@ public class User {
     public String nickname;
     public String deviceToken;
     public String publicKey;
+
+    public User() {}
+
+    public User(String email, String username, String usernameLower, String uid, String nickname, String deviceToken, String publicKey) {
+        this.email = email;
+        this.username = username;
+        this.usernameLower = usernameLower;
+        this.uid = uid;
+        this.nickname = nickname;
+        this.deviceToken = deviceToken;
+        this.publicKey = publicKey;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getUsernameLower() {
+        return usernameLower;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }
