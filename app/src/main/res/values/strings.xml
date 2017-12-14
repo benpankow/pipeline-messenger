@@ -32,4 +32,6 @@
     <string name="err_short_username">Username must be more than 6 characters</string>
     <string name="err_username_taken">Username already taken</string>
     <string name="new_msg">New message from %s</string>
+    <string name="info_change_convo_title">%s changed conversation title to \"%s\"</string>
+    <string name="info_remove_convo_title">%s removed conversation title</string>
 </resources>

@@ -7,6 +7,7 @@ import android.util.Log;
 import com.benpankow.pipeline.helper.DatabaseHelper;
 import com.benpankow.pipeline.helper.EncryptionHelper;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.Exclude;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -40,19 +41,32 @@ public class Message {
     public Object timestamp;
     public String key;
     public String signature;
+    public int messageType;
 
     public Message() {}
 
-    public Message(String senderUid, String text, Object timestamp, String key, String signature) {
+    public Message(String senderUid, String text, Object timestamp, String key, String signature,
+                   MessageType messageType) {
         this.senderUid = senderUid;
         this.text = text;
         this.timestamp = timestamp;
         this.key = key;
         this.signature = signature;
+        this.setMessageType(messageType);
     }
 
-    public Message(String senderUid, String text, Object timestamp) {
-        this(senderUid, text, timestamp, null, null);
+    public Message(String senderUid, String text, Object timestamp, MessageType messageType) {
+        this(senderUid, text, timestamp, null, null, messageType);
+    }
+
+    @Exclude
+    public MessageType getMessageType() {
+        return MessageType.values()[messageType];
+    }
+
+    @Exclude
+    public void setMessageType(MessageType messageType) {
+        this.messageType = messageType.ordinal();
     }
 
 
@@ -88,7 +102,7 @@ public class Message {
      * @return A copy of this message
      */
     public Message clone() {
-        return new Message(senderUid, text, timestamp, key, signature);
+        return new Message(senderUid, text, timestamp, key, signature, getMessageType());
     }
 
     /**

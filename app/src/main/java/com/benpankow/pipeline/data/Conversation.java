@@ -97,7 +97,7 @@ public class Conversation {
      */
     @Exclude
     public void getTitle(Consumer<String> callback) {
-        if (title != null) {
+        if (title != null && title.length() > 0) {
             callback.accept(title);
         } else {
             generateTitle(callback);

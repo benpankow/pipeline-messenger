@@ -4,9 +4,11 @@ import android.content.Context;
 import android.util.Base64;
 
 import com.benpankow.pipeline.R;
+import com.benpankow.pipeline.activity.DirectMessageSettingsActivity;
 import com.benpankow.pipeline.data.Conversation;
 import com.benpankow.pipeline.data.ConversationType;
 import com.benpankow.pipeline.data.Message;
+import com.benpankow.pipeline.data.MessageType;
 import com.benpankow.pipeline.data.Notification;
 import com.benpankow.pipeline.data.User;
 import com.google.firebase.database.DataSnapshot;
@@ -464,10 +466,12 @@ public class DatabaseHelper {
     /**
      * Removes a specific convoid from the list of a user's conversations
      *
-     * @param uid The user whose list of conversations to update
+     * @param user The user who is currently logged in
+     * @param targetUser The user whose list of conversations to update
      * @param convoid The convoid of the conversation to remove
      */
-    public static void removeConversationFromUser(final String uid, final String convoid) {
+    public static void removeConversationFromUser(final User user, final User targetUser,
+                                                  final String convoid, final Context context) {
         final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         database.child(CONVERSATIONS_KEY)
                 .child(convoid)
@@ -478,7 +482,30 @@ public class DatabaseHelper {
                         if (conversation != null
                                 && conversation.getConversationType() == ConversationType.GROUP_MESSAGE
                                 && conversation.getParticipants() != null) {
-                            conversation.getParticipants().remove(uid);
+                            conversation.getParticipants().remove(targetUser.getUid());
+
+                            String infoText = "%s removed %s";
+                            if (user.uid.equals(targetUser.uid)) {
+                                infoText = "%s left the conversation";
+                            }
+                            Message message = new Message(
+                                    user.getUid(),
+                                    String.format(
+                                            infoText,
+                                            user.nickname,
+                                            targetUser.nickname
+                                    ),
+                                    ServerValue.TIMESTAMP,
+                                    MessageType.INFORMATION
+                            );
+                            if (message.getText().length() > 0) {
+                                DatabaseHelper.addMessageToConversation(
+                                        convoid,
+                                        message,
+                                        user,
+                                        context
+                                );
+                            }
                         }
                         database.child(CONVERSATIONS_KEY)
                                 .child(convoid)
@@ -491,7 +518,7 @@ public class DatabaseHelper {
                     }
                 });
         database.child(USER_CONVERSATIONS_KEY)
-                .child(uid)
+                .child(targetUser.getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -502,7 +529,7 @@ public class DatabaseHelper {
                         }
                         conversationList.remove(convoid);
                         database.child(USER_CONVERSATIONS_KEY)
-                                .child(uid)
+                                .child(targetUser.getUid())
                                 .setValue(conversationList);
                     }
 

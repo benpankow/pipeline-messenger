@@ -14,10 +14,13 @@ import com.benpankow.pipeline.R;
 import com.benpankow.pipeline.activity.base.AuthenticatedActivity;
 import com.benpankow.pipeline.activity.component.UserHolderRemovable;
 import com.benpankow.pipeline.data.Conversation;
+import com.benpankow.pipeline.data.Message;
+import com.benpankow.pipeline.data.MessageType;
 import com.benpankow.pipeline.data.User;
 import com.benpankow.pipeline.helper.DatabaseHelper;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.ServerValue;
 
 import java8.util.function.Consumer;
 
@@ -53,10 +56,34 @@ public class GroupMessageSettingsActivity extends AuthenticatedActivity {
             public void onClick(View view) {
                 if (conversation != null) {
                     String intendedTitle = etConversationTitle.getText().toString().trim();
-                    if (intendedTitle.length() > 0) {
+                    if (!intendedTitle.equals(conversation.title)) {
+
+                        // Set conversation title + send notification to users
+                        String infoText = getString(R.string.info_change_convo_title);
+                        if (intendedTitle.length() == 0) {
+                            intendedTitle = "";
+                            infoText = getString(R.string.info_remove_convo_title);
+                        }
                         conversation.setTitle(intendedTitle);
-                    } else {
-                        conversation.setTitle(null);
+
+                        Message message = new Message(
+                                uid,
+                                String.format(
+                                        infoText,
+                                        userData.nickname,
+                                        intendedTitle
+                                ),
+                                ServerValue.TIMESTAMP,
+                                MessageType.INFORMATION
+                        );
+                        if (message.getText().length() > 0) {
+                            DatabaseHelper.addMessageToConversation(
+                                    convoid,
+                                    message,
+                                    userData,
+                                    GroupMessageSettingsActivity.this
+                            );
+                        }
                     }
                     DatabaseHelper.updateConversation(convoid, conversation);
                 }
@@ -114,7 +141,8 @@ public class GroupMessageSettingsActivity extends AuthenticatedActivity {
 
                     @Override
                     protected void onBindViewHolder(UserHolderRemovable holder, int position, User model) {
-                        holder.bindUser(model);
+                        holder.bindUser(userData);
+                        holder.bindTargetUser(model);
                         holder.bindConversationId(convoid);
                     }
                 };

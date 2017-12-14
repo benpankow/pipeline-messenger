@@ -33,6 +33,7 @@ public class UserHolderRemovable extends RecyclerView.ViewHolder {
     private User targetUser;
     private boolean isSwiped;
     private String targetConvoid;
+    private User currentUser;
 
     public UserHolderRemovable(final View itemView) {
         super(itemView);
@@ -76,9 +77,13 @@ public class UserHolderRemovable extends RecyclerView.ViewHolder {
             public void onHandRelease(SwipeLayout layout, float xvel, float yvel) {
                 // Remove user from conversation if swipe right
                 if (isSwiped && targetUser != null) {
-                    String uid = targetUser.getUid();
-                    if (uid != null && targetConvoid != null) {
-                        DatabaseHelper.removeConversationFromUser(uid, targetConvoid);
+                    if (targetConvoid != null) {
+                        DatabaseHelper.removeConversationFromUser(
+                                currentUser,
+                                targetUser,
+                                targetConvoid,
+                                ivMain.getContext()
+                        );
                     }
                 }
             }
@@ -86,6 +91,10 @@ public class UserHolderRemovable extends RecyclerView.ViewHolder {
     }
 
     public void bindUser(User model) {
+        currentUser = model;
+    }
+
+    public void bindTargetUser(User model) {
         targetUser = model;
         if (targetUser != null) {
             tvNickname.setText(targetUser.getNickname());

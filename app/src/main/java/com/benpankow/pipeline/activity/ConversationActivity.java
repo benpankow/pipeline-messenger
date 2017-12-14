@@ -22,6 +22,7 @@ import com.benpankow.pipeline.activity.component.MessageHolder;
 import com.benpankow.pipeline.data.Conversation;
 import com.benpankow.pipeline.data.ConversationType;
 import com.benpankow.pipeline.data.Message;
+import com.benpankow.pipeline.data.MessageType;
 import com.benpankow.pipeline.helper.DatabaseHelper;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -79,10 +80,14 @@ public class ConversationActivity extends AuthenticatedActivity {
                     @Override
                     public int getItemViewType(int position) {
                         // Switch between sent/received message layout
-                        if (getItem(position).sentByCurrentUser()) {
-                            return R.layout.item_message_sent;
+                        if (getItem(position).getMessageType() == MessageType.TEXT) {
+                            if (getItem(position).sentByCurrentUser()) {
+                                return R.layout.item_message_sent;
+                            } else {
+                                return R.layout.item_message_received;
+                            }
                         } else {
-                            return R.layout.item_message_received;
+                            return R.layout.item_message_info;
                         }
                     }
 
@@ -115,7 +120,8 @@ public class ConversationActivity extends AuthenticatedActivity {
                 Message message = new Message(
                         uid,
                         etMessage.getText().toString().trim(),
-                        ServerValue.TIMESTAMP
+                        ServerValue.TIMESTAMP,
+                        MessageType.TEXT
                 );
                 if (message.getText().length() > 0) {
                     DatabaseHelper.addMessageToConversation(

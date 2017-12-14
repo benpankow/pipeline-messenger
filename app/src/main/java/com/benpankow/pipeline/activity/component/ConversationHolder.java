@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.benpankow.pipeline.R;
 import com.benpankow.pipeline.activity.ConversationActivity;
 import com.benpankow.pipeline.data.Conversation;
+import com.benpankow.pipeline.data.User;
 import com.benpankow.pipeline.helper.DatabaseHelper;
 import com.daimajia.swipe.SwipeLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,9 +31,11 @@ public class ConversationHolder extends RecyclerView.ViewHolder {
     private Conversation conversation;
     private boolean isSwiped;
     private boolean wasRemoved;
+    private User currentUser;
 
     public ConversationHolder(View itemView) {
         super(itemView);
+        currentUser = null;
         isSwiped = false;
         wasRemoved = false;
 
@@ -86,14 +89,22 @@ public class ConversationHolder extends RecyclerView.ViewHolder {
             @Override
             public void onHandRelease(SwipeLayout layout, float xvel, float yvel) {
                 if (isSwiped) {
-                    String uid = FirebaseAuth.getInstance().getUid();
-                    if (uid != null && conversation != null) {
-                        DatabaseHelper.removeConversationFromUser(uid, conversation.getConvoid());
+                    if (currentUser != null && conversation != null) {
+                        DatabaseHelper.removeConversationFromUser(
+                                currentUser,
+                                currentUser,
+                                conversation.getConvoid(),
+                                ivMain.getContext()
+                        );
                         wasRemoved = true;
                     }
                 }
             }
         });
+    }
+
+    public void bindUser(User currentUser) {
+
     }
 
     public void bindConversation(Conversation model) {

@@ -86,7 +86,7 @@ public class SearchActivity extends AuthenticatedActivity {
 
             @Override
             protected void onBindViewHolder(UserHolder holder, int position, User model) {
-                holder.bindUser(model);
+                holder.bindTargetUser(model);
             }
 
         };

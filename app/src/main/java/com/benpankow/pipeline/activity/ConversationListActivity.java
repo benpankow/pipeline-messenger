@@ -104,6 +104,7 @@ public class ConversationListActivity extends AuthenticatedActivity {
             @Override
             protected void onBindViewHolder(ConversationHolder holder, int position, Conversation model) {
                 holder.bindConversation(model);
+                holder.bindUser(userData);
             }
         };
         rvConversations.setAdapter(conversationAdapter);

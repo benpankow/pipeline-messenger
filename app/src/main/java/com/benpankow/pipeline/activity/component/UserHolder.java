@@ -55,7 +55,7 @@ public class UserHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    public void bindUser(User model) {
+    public void bindTargetUser(User model) {
         targetUser = model;
         if (targetUser != null) {
             tvNickname.setText(targetUser.getNickname());

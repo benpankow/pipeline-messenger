@@ -10,8 +10,11 @@ import android.widget.TextView;
 import com.benpankow.pipeline.R;
 import com.benpankow.pipeline.activity.base.AuthenticatedActivity;
 import com.benpankow.pipeline.data.Conversation;
+import com.benpankow.pipeline.data.Message;
+import com.benpankow.pipeline.data.MessageType;
 import com.benpankow.pipeline.data.User;
 import com.benpankow.pipeline.helper.DatabaseHelper;
+import com.google.firebase.database.ServerValue;
 
 import java8.util.function.Consumer;
 
@@ -51,10 +54,34 @@ public class DirectMessageSettingsActivity extends AuthenticatedActivity {
             public void onClick(View view) {
                 if (conversation != null) {
                     String intendedTitle = etConversationTitle.getText().toString().trim();
-                    if (intendedTitle.length() > 0) {
+                    if (!intendedTitle.equals(conversation.title)) {
+
+                        // Set conversation title + send notification to users
+                        String infoText = getString(R.string.info_change_convo_title);
+                        if (intendedTitle.length() == 0) {
+                            intendedTitle = null;
+                            infoText = getString(R.string.info_remove_convo_title);
+                        }
                         conversation.setTitle(intendedTitle);
-                    } else {
-                        conversation.setTitle(null);
+
+                        Message message = new Message(
+                                uid,
+                                String.format(
+                                        infoText,
+                                        userData.nickname,
+                                        intendedTitle
+                                ),
+                                ServerValue.TIMESTAMP,
+                                MessageType.INFORMATION
+                        );
+                        if (message.getText().length() > 0) {
+                            DatabaseHelper.addMessageToConversation(
+                                    convoid,
+                                    message,
+                                    userData,
+                                    DirectMessageSettingsActivity.this
+                            );
+                        }
                     }
                     DatabaseHelper.updateConversation(convoid, conversation);
                 }

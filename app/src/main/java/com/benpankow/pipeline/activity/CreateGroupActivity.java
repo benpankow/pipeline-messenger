@@ -1,6 +1,5 @@
 package com.benpankow.pipeline.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
@@ -71,7 +70,7 @@ public class CreateGroupActivity extends AuthenticatedActivity {
 
                     @Override
                     protected void onBindViewHolder(UserHolderCheckbox holder, int position, User model) {
-                        holder.bindUser(model);
+                        holder.bindTargetUser(model);
                         holder.bindSet(addedUsers);
                     }
                 };
