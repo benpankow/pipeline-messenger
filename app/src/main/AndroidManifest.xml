@@ -38,6 +38,10 @@
             android:label="@string/new_group"
             android:screenOrientation="portrait"/>
         <activity
+            android:name=".activity.AddToGroupActivity"
+            android:label="@string/new_group"
+            android:screenOrientation="portrait"/>
+        <activity
             android:name=".activity.ConversationActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".activity.GroupMessageSettingsActivity"

@@ -3,6 +3,7 @@ package com.benpankow.pipeline.data;
 import android.content.Context;
 import android.widget.TextView;
 
+import com.benpankow.pipeline.R;
 import com.benpankow.pipeline.helper.DatabaseHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.Exclude;
@@ -119,6 +120,10 @@ public class Conversation {
 
         final int[] counter = { otherParticipants.size() - 1 };
         final String[] title = { "" };
+
+        if (otherParticipants.size() == 0) {
+            callback.accept("Empty group");
+        }
 
         for (String participantUid : otherParticipants) {
             DatabaseHelper.getUser(participantUid, new Consumer<User>() {

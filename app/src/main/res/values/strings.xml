@@ -34,4 +34,9 @@
     <string name="new_msg">New message from %s</string>
     <string name="info_change_convo_title">%s changed conversation title to \"%s\"</string>
     <string name="info_remove_convo_title">%s removed conversation title</string>
+    <string name="empty_group">Empty group</string>
+    <string name="info_left_convo">%s left the conversation</string>
+    <string name="info_removed">%s removed %s</string>
+    <string name="add_users">Add Users</string>
+    <string name="info_added">%s added %s to the conversation</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.benpankow.pipeline.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,21 +23,27 @@ import com.firebase.ui.database.FirebaseRecyclerOptions;
 import java.util.HashSet;
 import java.util.Set;
 
+import java8.util.function.Consumer;
+
 /**
  * Created by Ben Pankow on 12/2/17.
  *
  * Handles creation of groups between many users.
  */
-public class CreateGroupActivity extends AuthenticatedActivity {
+public class AddToGroupActivity extends AuthenticatedActivity {
 
     private RecyclerView rvFriends;
     private FirebaseRecyclerAdapter<User, UserHolderCheckbox> friendsAdapter;
     private Set<String> addedUsers;
+    private String convoid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group);
+
+        Intent intent = getIntent();
+        convoid = intent.getStringExtra("convoid");
 
         String uid = getAuth().getUid();
 
@@ -52,7 +59,6 @@ public class CreateGroupActivity extends AuthenticatedActivity {
                         .build();
 
         addedUsers = new HashSet<>();
-        addedUsers.add(uid);
 
         friendsAdapter =
                 new FirebaseRecyclerAdapter<User, UserHolderCheckbox>(conversationOptions) {
@@ -84,11 +90,21 @@ public class CreateGroupActivity extends AuthenticatedActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Next button, creates group
-        if (item.getItemId() == R.id.item_next && addedUsers.size() > 1) {
-            ConversationHelper.createAndOpenGroup(
-                    CreateGroupActivity.this,
-                    addedUsers.toArray(new String[0])
-            );
+        if (item.getItemId() == R.id.item_next && addedUsers.size() > 0) {
+            for (String uid : addedUsers) {
+                DatabaseHelper.getUser(uid, new Consumer<User>() {
+                    @Override
+                    public void accept(User targetUser) {
+                        DatabaseHelper.addUserToGroup(
+                                userData,
+                                targetUser,
+                                convoid,
+                                AddToGroupActivity.this
+                        );
+                    }
+                });
+            }
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);

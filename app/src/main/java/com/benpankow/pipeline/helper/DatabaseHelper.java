@@ -484,9 +484,10 @@ public class DatabaseHelper {
                                 && conversation.getParticipants() != null) {
                             conversation.getParticipants().remove(targetUser.getUid());
 
-                            String infoText = "%s removed %s";
+                            // Send notification in conversation
+                            String infoText = context.getString(R.string.info_removed);
                             if (user.uid.equals(targetUser.uid)) {
-                                infoText = "%s left the conversation";
+                                infoText = context.getString(R.string.info_left_convo);
                             }
                             Message message = new Message(
                                     user.getUid(),
@@ -517,6 +518,7 @@ public class DatabaseHelper {
 
                     }
                 });
+        // Remove from list of user conversations
         database.child(USER_CONVERSATIONS_KEY)
                 .child(targetUser.getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -538,6 +540,61 @@ public class DatabaseHelper {
 
                     }
                 });
+    }
+
+    /**
+     * Adds a specific user to a group, after that group was created
+     *
+     * @param user The user who is currently logged in
+     * @param targetUser The user who to add to the group
+     * @param convoid The convoid of the conversation to add to
+     */
+    public static void addUserToGroup(final User user, final User targetUser,
+                                      final String convoid, final Context context) {
+        final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        database.child(CONVERSATIONS_KEY)
+                .child(convoid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Conversation conversation = dataSnapshot.getValue(Conversation.class);
+                        if (conversation != null
+                                && conversation.getConversationType() == ConversationType.GROUP_MESSAGE
+                                && conversation.getParticipants() != null) {
+                            conversation.getParticipants().put(targetUser.getUid(), true);
+
+                            // Send notification in conversation
+                            String infoText = context.getString(R.string.info_added);
+                            Message message = new Message(
+                                    user.getUid(),
+                                    String.format(
+                                            infoText,
+                                            user.nickname,
+                                            targetUser.nickname
+                                    ),
+                                    ServerValue.TIMESTAMP,
+                                    MessageType.INFORMATION
+                            );
+                            if (message.getText().length() > 0) {
+                                DatabaseHelper.addMessageToConversation(
+                                        convoid,
+                                        message,
+                                        user,
+                                        context
+                                );
+                            }
+                        }
+                        database.child(CONVERSATIONS_KEY)
+                                .child(convoid)
+                                .setValue(conversation);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+        DatabaseHelper.addConversationToUser(targetUser.uid, convoid);
     }
 
     /**

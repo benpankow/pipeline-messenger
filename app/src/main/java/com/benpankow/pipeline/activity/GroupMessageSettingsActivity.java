@@ -22,6 +22,8 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.ServerValue;
 
+import java.security.acl.Group;
+
 import java8.util.function.Consumer;
 
 /**
@@ -33,6 +35,7 @@ public class GroupMessageSettingsActivity extends AuthenticatedActivity {
 
     private EditText etConversationTitle;
     private Button btnSaveSettings;
+    private Button btnAddUsers;
     private Conversation conversation;
     private FirebaseRecyclerAdapter<User, UserHolderRemovable> membersAdapter;
     private RecyclerView rvConvoMembers;
@@ -89,6 +92,18 @@ public class GroupMessageSettingsActivity extends AuthenticatedActivity {
                 }
             }
         });
+
+        btnAddUsers = findViewById(R.id.btn_add_user);
+        btnAddUsers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent settingsIntent =
+                        new Intent(GroupMessageSettingsActivity.this, AddToGroupActivity.class);
+                settingsIntent.putExtra("convoid", convoid);
+                GroupMessageSettingsActivity.this.startActivity(settingsIntent);
+            }
+        });
+
 
         DatabaseHelper.bindConversation(convoid, new Consumer<Conversation>() {
             @Override
