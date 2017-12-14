@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -106,6 +107,7 @@ public class ConversationListActivity extends AuthenticatedActivity {
             }
         };
         rvConversations.setAdapter(conversationAdapter);
+
     }
 
     @Override
@@ -123,12 +125,6 @@ public class ConversationListActivity extends AuthenticatedActivity {
             ConversationListActivity.this.startActivity(settingsIntent);
             return true;
         }
-        /*else if (item.getItemId() == R.id.item_add_conversation) {
-            Intent settingsIntent =
-                    new Intent(ConversationListActivity.this, SearchActivity.class);
-            ConversationListActivity.this.startActivity(settingsIntent);
-            return true;
-        }*/
         return super.onOptionsItemSelected(item);
     }
 

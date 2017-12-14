@@ -34,6 +34,7 @@ dependencies {
     compile 'com.firebaseui:firebase-ui-database:3.1.0'
     compile 'net.sourceforge.streamsupport:streamsupport:1.5.6'
     implementation 'com.android.support:design:26.1.0'
+    compile "com.daimajia.swipelayout:library:1.2.0@aar"
 }
 
 

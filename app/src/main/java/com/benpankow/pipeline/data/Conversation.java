@@ -5,6 +5,7 @@ import android.widget.TextView;
 
 import com.benpankow.pipeline.helper.DatabaseHelper;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.Exclude;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,11 +26,22 @@ import java8.util.function.Consumer;
  */
 public class Conversation {
 
-    public List<String> participants;
+    public HashMap<String, Boolean> participants;
     public String title;
     public String convoid;
     public HashMap<String, Message> recentMessages;
     public Object timestamp;
+    public int conversationType;
+
+    @Exclude
+    public ConversationType getConversationType() {
+        return ConversationType.values()[conversationType];
+    }
+
+    @Exclude
+    public void setConversationType(ConversationType conversationType) {
+        this.conversationType = conversationType.ordinal();
+    }
 
     /**
      * Gets the most recent message sent to the given user
@@ -54,9 +66,11 @@ public class Conversation {
      */
     public void addParticipants(String... uids) {
         if (participants == null) {
-            participants = new ArrayList<>();
+            participants = new HashMap<>();
         }
-        participants.addAll(Arrays.asList(uids));
+        for (String uid : uids) {
+            participants.put(uid, true);
+        }
     }
 
     /**
@@ -81,7 +95,7 @@ public class Conversation {
     public void generateTitle(final Consumer<String> callback) {
         String uid = FirebaseAuth.getInstance().getUid();
 
-        final List<String> otherParticipants = new ArrayList<>(participants);
+        final List<String> otherParticipants = new ArrayList<>(participants.keySet());
         otherParticipants.remove(uid);
 
         final int[] counter = { otherParticipants.size() - 1 };
@@ -90,7 +104,7 @@ public class Conversation {
         for (String participantUid : otherParticipants) {
             DatabaseHelper.getUser(participantUid, new Consumer<User>() {
                 @Override
-                public void accept(User u) {
+                public void accept(User user) {
                     if (title[0].length() > 0) {
                         if (otherParticipants.size() > 2) {
                             title[0] += ", ";
@@ -101,13 +115,39 @@ public class Conversation {
                     if (counter[0] == 0 && otherParticipants.size() > 1) {
                         title[0] += "and ";
                     }
-                    title[0] += u.nickname;
+                    title[0] += user.nickname;
                     if (counter[0] == 0) {
                         callback.accept(title[0]);
                     }
                     counter[0]--;
                 }
             });
+        }
+    }
+
+    /**
+     * Calls back with the User object of the other user in this direct message
+     *
+     * @param callback A callback that takes the found User
+     */
+    public void getOtherUser(final Consumer<User> callback) {
+        String uid = FirebaseAuth.getInstance().getUid();
+
+        if (getConversationType() == ConversationType.DIRECT_MESSAGE) {
+            final List<String> otherParticipants = new ArrayList<>(participants.keySet());
+            otherParticipants.remove(uid);
+            if (otherParticipants.size() == 0) {
+                callback.accept(null);
+            } else {
+                DatabaseHelper.getUser(otherParticipants.get(0), new Consumer<User>() {
+                    @Override
+                    public void accept(User user) {
+                        callback.accept(user);
+                    }
+                });
+            }
+        } else {
+            callback.accept(null);
         }
     }
 

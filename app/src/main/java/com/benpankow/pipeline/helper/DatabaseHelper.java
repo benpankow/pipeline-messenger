@@ -2,17 +2,15 @@ package com.benpankow.pipeline.helper;
 
 import android.content.Context;
 import android.util.Base64;
-import android.util.Log;
 
-import com.benpankow.pipeline.activity.ConversationActivity;
 import com.benpankow.pipeline.data.Conversation;
+import com.benpankow.pipeline.data.ConversationType;
 import com.benpankow.pipeline.data.Message;
 import com.benpankow.pipeline.data.Notification;
 import com.benpankow.pipeline.data.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.DatabaseReference.CompletionListener;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
@@ -26,14 +24,12 @@ import java.security.KeyFactory;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -227,6 +223,18 @@ public class DatabaseHelper {
     }
 
     /**
+     * Gets a Query that lists all users for a specific conversation
+     *
+     * @param convoid The convoid whose users to get
+     * @return A Query that lists all the users in the conversation
+     */
+    public static Query queryUsersInConversation(String convoid) {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        return database.child(CONVERSATIONS_KEY).child(convoid).child("participants");
+    }
+
+
+    /**
      * Gets a Query that gets a specific user by their username
      *
      * @param username The username to search for
@@ -285,8 +293,8 @@ public class DatabaseHelper {
      * @param uid2 The uid of the second user
      * @param callback A Callback taking a String of the convoid of the users' conversation
      */
-    public static void getConversationBetween(String uid1,
-                                              String uid2,
+    public static void getConversationBetween(final String uid1,
+                                              final String uid2,
                                               final Consumer<String> callback) {
         if (uid1 == null || uid2 == null) {
             callback.accept(null);
@@ -301,6 +309,10 @@ public class DatabaseHelper {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         String convoid = dataSnapshot.getValue(String.class);
+                        if (convoid != null) {
+                            addConversationToUser(uid1, convoid);
+                            addConversationToUser(uid2, convoid);
+                        }
                         callback.accept(convoid);
                     }
 
@@ -323,7 +335,7 @@ public class DatabaseHelper {
                                                  final String uid2,
                                                  final Consumer<String> callback) {
 
-        createGroup(new String[]{uid1, uid2}, new Consumer<String>() {
+        createConversation(new String[]{uid1, uid2}, new Consumer<String>() {
             @Override
             public void accept(String conversationKey) {
                 if (conversationKey == null) {
@@ -335,11 +347,11 @@ public class DatabaseHelper {
 
                 callback.accept(conversationKey);
             }
-        });
+        }, false);
     }
 
 
-    public static void createGroup(String[] uids, Consumer<String> callback) {
+    public static void createConversation(String[] uids, Consumer<String> callback, boolean groupMessage) {
         if (uids == null) {
             callback.accept(null);
             return;
@@ -354,6 +366,11 @@ public class DatabaseHelper {
 
         DatabaseReference conversationRef = database.child(CONVERSATIONS_KEY).push();
         Conversation conversation = new Conversation();
+        if (groupMessage) {
+            conversation.setConversationType(ConversationType.GROUP_MESSAGE);
+        } else {
+            conversation.setConversationType(ConversationType.DIRECT_MESSAGE);
+        }
         conversation.addParticipants(uids);
         conversation.timestamp = ServerValue.TIMESTAMP;
         String conversationKey = conversationRef.getKey();
@@ -415,12 +432,69 @@ public class DatabaseHelper {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+                        HashMap<String, Object> conversationList = null;
+                        if (dataSnapshot != null) {
+                            conversationList = dataSnapshot.getValue
+                                    (new GenericTypeIndicator<HashMap<String, Object>>() {});
+                        }
+                        if (conversationList == null) {
+                            conversationList = new HashMap<>();
+                        }
+                        if (!conversationList.containsKey(convoid)) {
+                            conversationList.put(convoid, ServerValue.TIMESTAMP);
+                        }
+                        database.child(USER_CONVERSATIONS_KEY)
+                                .child(uid)
+                                .setValue(conversationList);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    /**
+     * Removes a specific convoid from the list of a user's conversations
+     *
+     * @param uid The user whose list of conversations to update
+     * @param convoid The convoid of the conversation to remove
+     */
+    public static void removeConversationFromUser(final String uid, final String convoid) {
+        final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        database.child(CONVERSATIONS_KEY)
+                .child(convoid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Conversation conversation = dataSnapshot.getValue(Conversation.class);
+                        if (conversation != null
+                                && conversation.getConversationType() == ConversationType.GROUP_MESSAGE
+                                && conversation.participants != null) {
+                            conversation.participants.remove(uid);
+                        }
+                        database.child(CONVERSATIONS_KEY)
+                                .child(convoid)
+                                .setValue(conversation);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+        database.child(USER_CONVERSATIONS_KEY)
+                .child(uid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
                         HashMap<String, Object> conversationList = dataSnapshot.getValue
                                 (new GenericTypeIndicator<HashMap<String, Object>>() {});
                         if (conversationList == null) {
                             conversationList = new HashMap<>();
                         }
-                        conversationList.put(convoid, ServerValue.TIMESTAMP);
+                        conversationList.remove(convoid);
                         database.child(USER_CONVERSATIONS_KEY)
                                 .child(uid)
                                 .setValue(conversationList);
@@ -553,7 +627,7 @@ public class DatabaseHelper {
                         if (conversation == null) {
                             callback.accept(new ArrayList<String>());
                         } else {
-                            callback.accept(conversation.participants);
+                            callback.accept(new ArrayList<>(conversation.participants.keySet()));
                         }
                     }
 

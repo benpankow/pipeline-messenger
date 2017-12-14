@@ -40,9 +40,10 @@
         <activity
             android:name=".activity.ConversationActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".activity.ConversationSettingsActivity"
+        <activity android:name=".activity.GroupMessageSettingsActivity"
             android:screenOrientation="portrait" />
-
+        <activity android:name=".activity.DirectMessageSettingsActivity"
+            android:screenOrientation="portrait" />
         <service android:name=".service.IdService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>

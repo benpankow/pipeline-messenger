@@ -46,7 +46,11 @@ public class SearchActivity extends AuthenticatedActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                search(charSequence.toString());
+                String searchQuery = charSequence.toString();
+                if (userData != null && searchQuery.toLowerCase().equals(userData.usernameLower)) {
+                    searchQuery = "";
+                }
+                search(searchQuery);
             }
 
             @Override

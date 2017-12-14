@@ -20,6 +20,7 @@ import com.benpankow.pipeline.R;
 import com.benpankow.pipeline.activity.base.AuthenticatedActivity;
 import com.benpankow.pipeline.activity.component.MessageHolder;
 import com.benpankow.pipeline.data.Conversation;
+import com.benpankow.pipeline.data.ConversationType;
 import com.benpankow.pipeline.data.Message;
 import com.benpankow.pipeline.helper.DatabaseHelper;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -157,10 +158,19 @@ public class ConversationActivity extends AuthenticatedActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.item_settings) {
-            Intent settingsIntent =
-                    new Intent(ConversationActivity.this, ConversationSettingsActivity.class);
-            settingsIntent.putExtra("convoid", conversation.convoid);
-            ConversationActivity.this.startActivity(settingsIntent);
+            if (conversation != null
+                    && conversation.getConversationType() == ConversationType.DIRECT_MESSAGE) {
+                Intent settingsIntent =
+                        new Intent(ConversationActivity.this, DirectMessageSettingsActivity.class);
+                settingsIntent.putExtra("convoid", conversation.convoid);
+                ConversationActivity.this.startActivity(settingsIntent);
+            } else {
+                Intent settingsIntent =
+                        new Intent(ConversationActivity.this, GroupMessageSettingsActivity.class);
+                settingsIntent.putExtra("convoid", conversation.convoid);
+                ConversationActivity.this.startActivity(settingsIntent);
+            }
+
             return true;
         }
         return super.onOptionsItemSelected(item);

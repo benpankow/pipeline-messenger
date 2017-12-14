@@ -16,8 +16,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:paddingTop="8dp"
         android:paddingBottom="100dp"
-        android:clipToPadding="false"
-        />
+        android:clipToPadding="false"/>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/constraintLayout"
@@ -54,7 +53,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"/>
 
     </android.support.constraint.ConstraintLayout>
 

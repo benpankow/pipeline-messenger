@@ -63,7 +63,7 @@ public class ConversationHelper {
      */
     public static void createAndOpenGroup(final Context context,
                                           final String[] uids) {
-        DatabaseHelper.createGroup(
+        DatabaseHelper.createConversation(
                 uids,
                 new Consumer<String>() {
                     @Override
@@ -73,7 +73,8 @@ public class ConversationHelper {
                         conversationActivity.putExtra("convoid", convoid);
                         context.startActivity(conversationActivity);
                     }
-                }
+                },
+                true
         );
     }
 }
